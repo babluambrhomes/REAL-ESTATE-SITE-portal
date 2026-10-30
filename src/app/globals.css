@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563EB;
+  --color-secondary: #22BC90;
+  --color-gold: #C99732;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --font-sans: var(--font-poppins), sans-serif;
+  --font-outfit: var(--font-outfit), sans-serif;
+  --font-jakarta: var(--font-jakarta), sans-serif;
+  --font-rounded-mplus: var(--font-rounded-mplus), sans-serif;
+}
+
+body {
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.font-rounded-mplus {
+  font-family: var(--font-rounded-mplus), sans-serif;
+}
+
+.font-outfit {
+  font-family: var(--font-outfit), sans-serif;
+}
+
+.font-jakarta {
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.font-poppins {
+  font-family: var(--font-poppins), sans-serif;
+}
+
+
+
+.thumbs-swiper .swiper-slide {
+  opacity: 0.55;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active > div {
+  border-width: 3px;
+  border-style: solid;
+  border-color: transparent;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.otp-input {
+  width: 2.75rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #111827;
+  background-color: #fff;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.otp-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+}
+
+.mapcard-swiper .swiper-pagination-bullet {
+  background: rgba(156, 163, 175, 0.7);
+  width: 8px;
+  height: 8px;
+}
+
+.mapcard-swiper .swiper-pagination-bullet-active {
+  background: #ffffff;
+}
+
+/* Hide scrollbar for Chrome, Safari, Opera, Edge, Firefox, IE */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar,
+.scrollbar-hide {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Custom thin scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@keyframes happyFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-happy-fade {
+  animation: happyFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes happySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-happy-text {
+  animation: happySlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 1:1 Figma Compound Properties Cards: One-sided blue line accent & light soft bottom shadow */
+.compound-big-card {
+  box-shadow: -3.5px 0px 0px 0px #2563EB, 0 8px 18px -2px rgba(37, 99, 235, 0.12);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.compound-big-card:hover {
+  transform: translateY(-2px);
+  box-shadow: -3.5px 0px 0px 0px #2563EB, 0 12px 24px -2px rgba(37, 99, 235, 0.18);
+}
+
+.compound-small-card {
+  box-shadow: 3.5px 0px 0px 0px #2563EB, 0 6px 14px -2px rgba(37, 99, 235, 0.10);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.compound-small-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 3.5px 0px 0px 0px #2563EB, 0 10px 20px -2px rgba(37, 99, 235, 0.16);
+}
