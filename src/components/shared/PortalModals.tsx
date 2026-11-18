@@ -60,7 +60,7 @@ export const PreviewAsSellerModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200 font-jakarta">
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-7 space-y-5">
+      <div className="relative w-full max-w-xl bg-white rounded-xl shadow-xl border border-slate-100 p-6 sm:p-7 space-y-5">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
@@ -81,8 +81,8 @@ export const PreviewAsSellerModal = ({
         </div>
 
         {/* Mini Property Card */}
-        <div className="flex items-center gap-4 p-3 rounded-2xl border border-slate-200 bg-slate-50/50">
-          <div className="relative w-28 h-20 rounded-xl overflow-hidden shrink-0 border border-slate-200">
+        <div className="flex items-center gap-4 p-3 rounded-xl border border-slate-200 bg-slate-50/50">
+          <div className="relative w-28 h-20 rounded-lg overflow-hidden shrink-0 border border-slate-200">
             <Image
               src={property.image}
               alt={property.title}
@@ -123,14 +123,14 @@ export const PreviewAsSellerModal = ({
             {/* 1. Property Detail Page (Selected) */}
             <div
               onClick={() => setSelectedMode("desktop")}
-              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative flex flex-col justify-between min-h-[120px] ${
+              className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative flex flex-col justify-between min-h-[120px] ${
                 selectedMode === "desktop"
                   ? "border-[#1865F2] bg-blue-50/40 shadow-xs"
                   : "border-slate-200 hover:border-slate-300 bg-white"
               }`}
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-blue-100/60 text-[#1865F2] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-blue-100/60 text-[#1865F2] flex items-center justify-center">
                   <Globe size={20} />
                 </div>
                 <div
@@ -153,7 +153,7 @@ export const PreviewAsSellerModal = ({
 
             {/* 2. Empty / Secondary slot */}
             <div
-              className="p-4 rounded-2xl border border-slate-200 bg-slate-50/40 flex flex-col items-center justify-center text-center opacity-60"
+              className="p-4 rounded-xl border border-slate-200 bg-slate-50/40 flex flex-col items-center justify-center text-center opacity-60"
             >
               <span className="text-[11px] font-medium text-slate-400">Desktop View</span>
             </div>
@@ -161,14 +161,14 @@ export const PreviewAsSellerModal = ({
             {/* 3. Mobile View */}
             <div
               onClick={() => setSelectedMode("mobile")}
-              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative flex flex-col justify-between min-h-[120px] ${
+              className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative flex flex-col justify-between min-h-[120px] ${
                 selectedMode === "mobile"
                   ? "border-[#1865F2] bg-blue-50/40 shadow-xs"
                   : "border-slate-200 hover:border-slate-300 bg-white"
               }`}
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-blue-100/60 text-[#1865F2] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-blue-100/60 text-[#1865F2] flex items-center justify-center">
                   <Smartphone size={20} />
                 </div>
                 <div
@@ -294,7 +294,7 @@ export const LeadsPriorityModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200 font-jakarta">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 space-y-5">
+      <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-slate-100 p-6 space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h3 className="text-base font-bold text-[#0B132B]">
@@ -415,7 +415,7 @@ export const AddNoteModal = ({ isOpen, onClose, onSave }: AddNoteModalProps) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200 font-jakarta">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 space-y-4">
+      <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-slate-100 p-6 space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-[#0B132B]">Add note</h3>
@@ -529,7 +529,7 @@ export const ScheduleSiteVisitModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200 font-jakarta">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-7 space-y-4">
+      <div className="relative w-full max-w-lg bg-white rounded-xl shadow-xl border border-slate-100 p-6 sm:p-7 space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h3 className="text-base font-bold text-[#0B132B]">
@@ -762,7 +762,7 @@ export const BulkAssignLeadsModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200 font-jakarta overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-7 space-y-5 my-8 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-xl border border-slate-100 p-6 sm:p-7 space-y-5 my-8 max-h-[90vh] overflow-y-auto no-scrollbar">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-slate-100 pb-3">
           <div>
@@ -795,7 +795,7 @@ export const BulkAssignLeadsModal = ({
             {/* Option 1: Assign by Number */}
             <div
               onClick={() => setChooseMode("number")}
-              className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
+              className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
                 chooseMode === "number"
                   ? "border-[#1865F2] bg-blue-50/30"
                   : "border-slate-200 hover:border-slate-300 bg-white"
@@ -821,7 +821,7 @@ export const BulkAssignLeadsModal = ({
             {/* Option 2: Assign by Filter */}
             <div
               onClick={() => setChooseMode("filter")}
-              className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
+              className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
                 chooseMode === "filter"
                   ? "border-[#1865F2] bg-blue-50/30"
                   : "border-slate-200 hover:border-slate-300 bg-white"
@@ -868,7 +868,7 @@ export const BulkAssignLeadsModal = ({
             </div>
 
             {/* Lead Preview Box */}
-            <div className="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
                 Lead Preview ⓘ
               </span>
@@ -898,7 +898,7 @@ export const BulkAssignLeadsModal = ({
             {/* Equal Distribution */}
             <div
               onClick={() => setAssignmentType("equal")}
-              className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
+              className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
                 assignmentType === "equal"
                   ? "border-[#1865F2] bg-blue-50/30"
                   : "border-slate-200 hover:border-slate-300 bg-white"
@@ -924,7 +924,7 @@ export const BulkAssignLeadsModal = ({
             {/* Custom Distribution */}
             <div
               onClick={() => setAssignmentType("custom")}
-              className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
+              className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex items-start gap-3 ${
                 assignmentType === "custom"
                   ? "border-[#1865F2] bg-blue-50/30"
                   : "border-slate-200 hover:border-slate-300 bg-white"
@@ -1017,7 +1017,7 @@ export const BulkAssignLeadsModal = ({
             <span className="text-xs font-bold text-slate-800">Distribution Preview</span>
           </div>
 
-          <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
               {selectedMembers.map((m, idx) => {
                 const count = idx < remainder ? baseCount + 1 : baseCount;
@@ -1026,7 +1026,7 @@ export const BulkAssignLeadsModal = ({
                 return (
                   <div
                     key={m}
-                    className="p-3 rounded-xl bg-white border border-slate-200 text-center space-y-1 shadow-2xs"
+                    className="p-3 rounded-lg bg-white border border-slate-200 text-center space-y-1 shadow-2xs"
                   >
                     <span className="block text-xs font-bold text-slate-800 truncate">
                       {m}

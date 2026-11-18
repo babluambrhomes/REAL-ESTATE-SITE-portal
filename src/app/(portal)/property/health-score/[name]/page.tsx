@@ -2,75 +2,91 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import {
   ChevronRight,
-  Calendar,
   Eye,
-  Check,
-  AlertTriangle,
-  Building,
-  TrendingUp,
-  Plus,
-  RefreshCw,
-  ExternalLink,
-  ShieldCheck,
-  Maximize2,
-  Layers,
-  Home,
 } from "lucide-react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import toast from "react-hot-toast";
 
-
-
-export default function PortalHealthScore  ()  {
+export default function PortalHealthScore() {
+  const router = useRouter();
   const [timeFilter, setTimeFilter] = useState("Last 7 days");
   const params = useParams<{ name: string }>();
+
+  // Extract property name with Figma default fallback
+  const rawName = typeof params?.name === "string" ? decodeURIComponent(params.name) : "";
   const propertyName =
-    typeof params?.name === "string" ? decodeURIComponent(params.name) : "Property";
-  const encodedName = encodeURIComponent(propertyName);
+    !rawName || rawName.toLowerCase() === "property"
+      ? "The terraces at max estate 361"
+      : rawName;
+
+  const handleActionClick = (actionName: string) => {
+    toast.success(`Opening ${actionName} section...`);
+    router.push("/property/add-new");
+  };
 
   return (
-    <div className="space-y-6 font-jakarta pb-12">
-      {/* 1. Breadcrumb & Header */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+    <div className="space-y-6 font-jakarta pb-12 antialiased">
+      {/* 1. Breadcrumb & Page Header */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-normal">
           <Link
-            href='/property'
+            href="/property"
             className="hover:text-[#1865F2] cursor-pointer transition-colors"
           >
             Properties
           </Link>
-          <ChevronRight size={13} />
-          <span className="text-slate-700 font-semibold truncate">
+          <ChevronRight size={13} className="text-slate-400" />
+          <span className="text-slate-600 font-medium capitalize truncate">
             {propertyName}
           </span>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-0.5">
           <div>
-            <h2 className="text-[22px] sm:text-[24px] font-bold text-[#0B132B]">
+            <h1 className="text-[22px] sm:text-[24px] font-bold text-[#0B132B] tracking-tight">
               Properties health score
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            </h1>
+            <p className="text-xs sm:text-[13px] text-slate-500 font-normal mt-0.5">
               See how your listing is performing and what you can do to get more views, leads and enquiries.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
             <Link
-              href={`/property/performance-diagnosis/${encodedName}`}
-              className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1865F2] text-xs font-bold transition-colors cursor-pointer"
+              href={`/property/performance-diagnosis/${encodeURIComponent(propertyName)}`}
+              className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1865F2] text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
-              Performance Diagnosis ➔
+              <span>Performance Diagnosis</span>
+              <ChevronRight size={13} />
             </Link>
 
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 shadow-2xs">
-              <Calendar size={14} className="text-slate-400" />
+            {/* Filter Dropdown Pill with Figma calendar icon */}
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200/90 bg-white text-xs font-semibold text-slate-700 shadow-2xs hover:border-slate-300 transition-colors">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="shrink-0"
+              >
+                <rect x="1.5" y="2.5" width="13" height="12" rx="2" stroke="#64748B" strokeWidth="1.3" />
+                <path d="M1.5 6H14.5" stroke="#64748B" strokeWidth="1.3" />
+                <path d="M4.5 1V3.5" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M11.5 1V3.5" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round" />
+                <rect x="4" y="8" width="2" height="2" rx="0.5" fill="#10B981" />
+                <rect x="7" y="8" width="2" height="2" rx="0.5" fill="#10B981" />
+                <rect x="10" y="8" width="2" height="2" rx="0.5" fill="#10B981" />
+                <rect x="4" y="11" width="2" height="2" rx="0.5" fill="#10B981" />
+                <rect x="7" y="11" width="2" height="2" rx="0.5" fill="#10B981" />
+              </svg>
               <select
                 value={timeFilter}
                 onChange={(e) => setTimeFilter(e.target.value)}
-                className="bg-transparent focus:outline-none cursor-pointer"
+                className="bg-transparent focus:outline-none cursor-pointer pr-1 text-slate-700"
               >
                 <option>Last 7 days</option>
                 <option>Last 30 days</option>
@@ -82,174 +98,262 @@ export default function PortalHealthScore  ()  {
       </div>
 
       {/* 2. Top Row: Property Summary Card + Buyer Ready Score (Figma 1:1) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Card: Property Overview (Span 7) */}
-        <div className="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row gap-5">
-          {/* Property Image with Badge */}
-          <div className="relative w-full md:w-56 h-48 md:h-auto rounded-2xl overflow-hidden shrink-0 border border-slate-100">
+        <div className="lg:col-span-7 rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs flex flex-col md:flex-row gap-5">
+          {/* Property Image with Badge & Bottom View Button */}
+          <div className="relative w-full md:w-56 h-48 md:h-auto min-h-[190px] rounded-xl overflow-hidden shrink-0 border border-slate-100">
             <Image
               src="/images/properties/tower-popular-figma.jpg"
               alt="The Terraces At Max Estate 361"
               fill
               className="object-cover"
+              priority
             />
-            <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold shadow-xs">
+            {/* On Going Green Badge */}
+            <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-[#E6F7ED] text-[#00A35C] text-[11px] font-semibold shadow-2xs">
               On Going
             </span>
+            {/* View on portal white button */}
             <button
               type="button"
-              className="absolute bottom-2.5 left-2.5 right-2.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 backdrop-blur-xs transition-colors cursor-pointer"
+              onClick={() => {
+                toast.success("Opening listing view on portal...");
+                router.push("/property");
+              }}
+              className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white/95 hover:bg-white text-slate-800 text-[11px] font-semibold flex items-center justify-center gap-1.5 shadow-md backdrop-blur-xs transition-colors cursor-pointer whitespace-nowrap"
             >
-              <Eye size={13} />
+              <Eye size={13} className="text-slate-700" />
               <span>View on portal</span>
             </button>
           </div>
 
           {/* Details & Specs */}
-          <div className="flex-1 space-y-3 min-w-0">
+          <div className="flex-1 space-y-2.5 min-w-0">
             <div>
-              <h3 className="text-base font-bold text-[#0B132B] truncate">
+              <h3 className="text-[17px] font-bold text-[#0B132B] truncate capitalize">
                 The Terraces At Max Estate 361
               </h3>
-              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                <span className="text-[#1865F2]">📍</span>
-                <span>3 BHK . Apartment . Sector 124, Noida</span>
+              <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                <Image
+                  src="/icon/health-score/icon (3).png"
+                  alt="Location"
+                  width={11}
+                  height={14}
+                  className="object-contain shrink-0"
+                />
+                <span className="truncate">3 BHK . Apartment . Sector 124, Noida</span>
               </p>
             </div>
 
-            {/* 6 Specs Grid */}
-            <div className="grid grid-cols-2 gap-3 pt-1 text-xs">
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-sm">₹</span>
-                <div>
-                  <span className="font-bold text-slate-800 block text-[11.5px]">₹ 1.2 Cr</span>
-                  <span className="text-[10px] text-slate-400">Starting Price</span>
+            {/* 6 Specs Grid matching Figma */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-1 text-xs">
+              {/* 1. Starting Price */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                  <Image
+                    src="/icon/health-score/Group (6).png"
+                    alt="Starting Price"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 block text-[13px] leading-tight truncate">
+                    ₹ 1.2 Cr
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-normal">Starting Price</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <Maximize2 size={14} className="text-slate-500" />
-                <div>
-                  <span className="font-bold text-slate-800 block text-[11.5px]">3,200-4,500 Sq. Ft</span>
-                  <span className="text-[10px] text-slate-400">Area</span>
+              {/* 2. Area */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                  <Image
+                    src="/icon/health-score/Group 1686560439.png"
+                    alt="Area"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 block text-[13px] leading-tight truncate">
+                    3,200-4,500 Sq. Ft
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-normal">Area</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <Building size={14} className="text-slate-500" />
-                <div>
-                  <span className="font-bold text-slate-800 block text-[11.5px]">Ready to move</span>
-                  <span className="text-[10px] text-slate-400">Status</span>
+              {/* 3. Status */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                  <Image
+                    src="/icon/health-score/Frame 1984078297.png"
+                    alt="Status"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 block text-[13px] leading-tight truncate">
+                    Ready to move
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-normal">Status</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <Layers size={14} className="text-slate-500" />
-                <div>
-                  <span className="font-bold text-slate-800 block text-[11.5px]">2 floors</span>
-                  <span className="text-[10px] text-slate-400">Floor number</span>
+              {/* 4. Floor number */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                  <Image
+                    src="/icon/health-score/Frame 1984078300.png"
+                    alt="Floor number"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 block text-[13px] leading-tight truncate">
+                    2 floors
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-normal">Floor number</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <Home size={14} className="text-slate-500" />
-                <div>
-                  <span className="font-bold text-slate-800 block text-[11.5px]">3 BHK</span>
-                  <span className="text-[10px] text-slate-400">Configuration</span>
+              {/* 5. Configuration */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                  <Image
+                    src="/icon/health-score/Frame 1984078300 (1).png"
+                    alt="Configuration"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 block text-[13px] leading-tight truncate">
+                    3 BHK
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-normal">Configuration</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <ShieldCheck size={14} className="text-emerald-500" />
-                <div>
-                  <span className="font-bold text-slate-800 block text-[11.5px]">Rera approved</span>
-                  <span className="text-[10px] text-slate-400">Verified</span>
+              {/* 6. Verified */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
+                  <Image
+                    src="/icon/health-score/Frame 1984078297 (1).png"
+                    alt="Verified"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 block text-[13px] leading-tight truncate">
+                    Rera approved
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-normal">Verified</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Card: Buyer Ready Score 82% (Span 5) */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4 flex flex-col justify-between">
+        {/* Right Card: Buyer Ready Score (Span 5) */}
+        <div className="lg:col-span-5 rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs space-y-3.5 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-[#0B132B]">Buyer Ready Score</h4>
-            <span className="text-[11px] text-slate-400 flex items-center gap-1">
-              Last Updated 2 Hours Ago <span className="w-2 h-2 rounded-full border border-slate-300 inline-block" />
+            <h4 className="text-[15px] font-bold text-[#0B132B]">Buyer Ready Score</h4>
+            <span className="text-[11px] text-slate-400 flex items-center gap-1.5 font-normal">
+              Last Updated 2 Hours Ago
+              <span className="w-3.5 h-3.5 rounded-full border border-slate-300 inline-block shrink-0" />
             </span>
           </div>
 
-          <div className="flex items-center gap-6 py-2">
-            {/* Circular Gauge 82% */}
-            <div className="relative w-32 h-32 shrink-0 flex items-center justify-center">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  fill="transparent"
-                  stroke="#E2E8F0"
-                  strokeWidth="8"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  fill="transparent"
-                  stroke="#00C49F"
-                  strokeWidth="8"
-                  strokeDasharray="251.2"
-                  strokeDashoffset="45"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center">
-                <span className="text-2xl font-black text-[#0B132B]">82%</span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Buyer Ready</span>
+          <div className="flex items-center gap-5 py-1">
+            {/* Circular Gauge 82% using high-res Figma Ethereum balance frame */}
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0 flex items-center justify-center">
+              <Image
+                src="/icon/health-score/Ethereum balance.png"
+                alt="Buyer Ready Score 82%"
+                width={124}
+                height={124}
+                className="object-contain"
+                priority
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[26px] font-black text-[#0B132B] tracking-tight leading-none">
+                  82%
+                </span>
+                <span className="text-[10px] text-slate-500 font-medium mt-1">
+                  Buyer Ready
+                </span>
               </div>
             </div>
 
-            {/* Checklist */}
-            <div className="space-y-1.5 text-xs text-slate-700 flex-1">
+            {/* Checklist (7 items exactly as in Figma) */}
+            <div className="space-y-1.5 text-xs text-slate-700 flex-1 pl-1">
+              {/* 1. Basic */}
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">
-                  ✓
-                </div>
-                <span className="font-semibold text-slate-800 text-[11.5px]">Basic</span>
+                <Image
+                  src="/icon/health-score/Group 1686560450.png"
+                  alt="Completed"
+                  width={15}
+                  height={15}
+                  className="object-contain shrink-0"
+                />
+                <span className="font-medium text-slate-800 text-[11.5px]">Basic</span>
               </div>
 
+              {/* 2. Location */}
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">
-                  ✓
-                </div>
-                <span className="font-semibold text-slate-800 text-[11.5px]">Location</span>
+                <Image
+                  src="/icon/health-score/Group 1686560450.png"
+                  alt="Completed"
+                  width={15}
+                  height={15}
+                  className="object-contain shrink-0"
+                />
+                <span className="font-medium text-slate-800 text-[11.5px]">Location</span>
               </div>
 
+              {/* 3. Details (Recommended) */}
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">
+                <div className="w-[15px] h-[15px] rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[9px] font-black shrink-0 leading-none">
                   !
                 </div>
-                <span className="font-semibold text-slate-800 text-[11.5px]">Details (Recommended)</span>
+                <span className="font-medium text-slate-800 text-[11.5px]">
+                  Details (Recommended)
+                </span>
               </div>
 
+              {/* 4. Price (Recommended) */}
               <div className="flex items-center gap-2 text-slate-400">
-                <div className="w-4 h-4 rounded-full border border-slate-300" />
-                <span className="text-[11.5px]">Price (Recommended)</span>
+                <div className="w-[15px] h-[15px] rounded-full border border-slate-300 shrink-0" />
+                <span className="text-[11.5px] font-normal">Price (Recommended)</span>
               </div>
 
+              {/* 5. Amenities (Recommended) */}
               <div className="flex items-center gap-2 text-slate-400">
-                <div className="w-4 h-4 rounded-full border border-slate-300" />
-                <span className="text-[11.5px]">Amenities (Recommended)</span>
+                <div className="w-[15px] h-[15px] rounded-full border border-slate-300 shrink-0" />
+                <span className="text-[11.5px] font-normal">Amenities (Recommended)</span>
               </div>
 
+              {/* 6. Media (Recommended) */}
               <div className="flex items-center gap-2 text-slate-400">
-                <div className="w-4 h-4 rounded-full border border-slate-300" />
-                <span className="text-[11.5px]">Media (Recommended)</span>
+                <div className="w-[15px] h-[15px] rounded-full border border-slate-300 shrink-0" />
+                <span className="text-[11.5px] font-normal">Media (Recommended)</span>
               </div>
 
+              {/* 7. Preview (recommended) */}
               <div className="flex items-center gap-2 text-slate-400">
-                <div className="w-4 h-4 rounded-full border border-slate-300" />
-                <span className="text-[11.5px]">Preview (recommended)</span>
+                <div className="w-[15px] h-[15px] rounded-full border border-slate-300 shrink-0" />
+                <span className="text-[11.5px] font-normal">Preview (recommended)</span>
               </div>
             </div>
           </div>
@@ -257,7 +361,7 @@ export default function PortalHealthScore  ()  {
       </div>
 
       {/* 3. Middle Section: Section Wise Completion (Figma 1:1) */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs space-y-4">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base font-bold text-[#0B132B]">
@@ -273,80 +377,86 @@ export default function PortalHealthScore  ()  {
               3 out of 16 completed
             </span>
             <div className="w-32 h-2 rounded-full bg-slate-100 overflow-hidden">
-              <div className="w-[70%] h-full bg-[#1865F2]" />
+              <div className="w-[70%] h-full bg-[#1865F2] rounded-full" />
             </div>
             <span className="text-xs font-bold text-[#0B132B]">70%</span>
           </div>
         </div>
 
         {/* 6 Section Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
           {[
             {
               id: "basic",
               title: "Basic Details",
               pct: 100,
-              icon: "📋",
+              completed: true,
               action: "READD",
-              isAdd: false,
+              icon: "/icon/health-score/Group 1686560444 (1).png",
             },
             {
               id: "details",
               title: "Details",
               pct: 100,
-              icon: "📑",
+              completed: true,
               action: "READD",
-              isAdd: false,
+              icon: "/icon/health-score/Group 1686560445.png",
             },
             {
               id: "amenities",
               title: "Amenities",
               pct: 100,
-              icon: "🏊",
+              completed: true,
               action: "READD",
-              isAdd: false,
+              icon: "/icon/health-score/Group 1686560446.png",
             },
             {
               id: "location",
               title: "Location",
               pct: 0,
-              icon: "📍",
+              completed: false,
               action: "ADD",
-              isAdd: true,
+              icon: "/icon/health-score/Group 1686560447.png",
             },
             {
               id: "price",
               title: "Price",
               pct: 0,
-              icon: "🏷️",
+              completed: false,
               action: "ADD",
-              isAdd: true,
+              icon: "/icon/health-score/Group 1686560448.png",
             },
             {
               id: "media",
               title: "Media",
               pct: 0,
-              icon: "📷",
+              completed: false,
               action: "ADD",
-              isAdd: true,
+              icon: "/icon/health-score/Group 1686560449.png",
             },
           ].map((sec) => (
             <div
               key={sec.id}
-              className="p-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3 shadow-2xs hover:border-slate-300 transition-colors"
+              className="p-3.5 sm:p-4 rounded-xl border border-slate-200/80 bg-white flex items-center justify-between gap-3 shadow-2xs hover:border-slate-300 transition-colors"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center text-lg shrink-0">
-                  {sec.icon}
+                <div className="relative w-10 h-10 shrink-0">
+                  <Image
+                    src={sec.icon}
+                    alt={sec.title}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h5 className="text-xs font-bold text-[#0B132B] truncate">
+                <div className="flex-1 min-w-0 pr-1">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <h5 className="text-[13px] font-bold text-[#0B132B] truncate">
                       {sec.title}
                     </h5>
                     <span
                       className={`text-[11px] font-bold ${
-                        sec.pct > 0 ? "text-emerald-600" : "text-slate-400"
+                        sec.completed ? "text-[#00C49F]" : "text-[#EF4444]"
                       }`}
                     >
                       {sec.pct}%
@@ -354,8 +464,8 @@ export default function PortalHealthScore  ()  {
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
                     <div
-                      className={`h-full ${
-                        sec.pct > 0 ? "bg-emerald-500" : "bg-slate-200"
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        sec.completed ? "bg-[#00C49F]" : "bg-transparent"
                       }`}
                       style={{ width: `${sec.pct}%` }}
                     />
@@ -363,12 +473,23 @@ export default function PortalHealthScore  ()  {
                 </div>
               </div>
 
+              {/* Vertical Action Button using Figma add_circle icon */}
               <button
                 type="button"
-                className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-[#1865F2] hover:text-[#1865F2] text-[11px] font-bold text-slate-600 flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
+                onClick={() => handleActionClick(sec.title)}
+                className="flex flex-col items-center justify-center shrink-0 cursor-pointer text-slate-600 hover:text-[#1865F2] transition-colors pl-2 group"
+                title={`${sec.action} ${sec.title}`}
               >
-                <span>{sec.action}</span>
-                <Plus size={11} />
+                <Image
+                  src="/icon/health-score/add_circle.png"
+                  alt="Add"
+                  width={18}
+                  height={18}
+                  className="object-contain mb-0.5 group-hover:scale-110 transition-transform"
+                />
+                <span className="text-[10px] font-semibold tracking-tight text-slate-600 group-hover:text-[#1865F2]">
+                  {sec.action}
+                </span>
               </button>
             </div>
           ))}
@@ -376,18 +497,24 @@ export default function PortalHealthScore  ()  {
       </div>
 
       {/* 4. Bottom Row: Benefits + Recommendations (Figma 1:1) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left: Benefits Of A Higher Health Score (Span 6) */}
-        <div className="lg:col-span-6 rounded-2xl border border-emerald-200/70 bg-[#E8F8F2] p-6 shadow-2xs relative overflow-hidden flex flex-col justify-between">
+        <div className="lg:col-span-6 rounded-xl border border-[#A7F3D0]/60 bg-[#E7F6EF] p-5 sm:p-6 shadow-2xs relative overflow-hidden flex flex-col justify-between min-h-[220px]">
           <div>
             <h4 className="text-base font-bold text-[#0B132B]">
               Benefits Of A Higher Health Score
             </h4>
 
-            <div className="space-y-4 pt-4">
+            <div className="space-y-3.5 pt-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Eye size={16} />
+                <div className="w-7 h-7 rounded-full bg-[#D1FAE5] flex items-center justify-center shrink-0 mt-0.5">
+                  <Image
+                    src="/icon/health-score/Group (7).png"
+                    alt="More Visibility"
+                    width={18}
+                    height={18}
+                    className="object-contain"
+                  />
                 </div>
                 <div>
                   <h5 className="text-xs font-bold text-[#0B132B]">More Visibility</h5>
@@ -396,8 +523,14 @@ export default function PortalHealthScore  ()  {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <TrendingUp size={16} />
+                <div className="w-7 h-7 rounded-full bg-[#D1FAE5] flex items-center justify-center shrink-0 mt-0.5">
+                  <Image
+                    src="/icon/health-score/Frame (1).png"
+                    alt="Better Leads"
+                    width={18}
+                    height={18}
+                    className="object-contain"
+                  />
                 </div>
                 <div>
                   <h5 className="text-xs font-bold text-[#0B132B]">Better Leads</h5>
@@ -406,8 +539,14 @@ export default function PortalHealthScore  ()  {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Building size={16} />
+                <div className="w-7 h-7 rounded-full bg-[#D1FAE5] flex items-center justify-center shrink-0 mt-0.5">
+                  <Image
+                    src="/icon/health-score/Frame (2).png"
+                    alt="Fast Deals"
+                    width={18}
+                    height={18}
+                    className="object-contain"
+                  />
                 </div>
                 <div>
                   <h5 className="text-xs font-bold text-[#0B132B]">Fast Deals</h5>
@@ -417,62 +556,68 @@ export default function PortalHealthScore  ()  {
             </div>
           </div>
 
-          {/* 3D Modern building illustration with green growth arrow */}
-          <div className="relative w-44 h-36 self-end -mt-8 opacity-90">
+          {/* Exact building with green growth arrow illustration from Figma */}
+          <div className="absolute right-3 sm:right-5 bottom-2 sm:bottom-3 w-36 sm:w-44 h-32 sm:h-36 shrink-0 pointer-events-none">
             <Image
-              src="/banner/price_trends.png"
+              src="/icon/health-score/Group 1686560453.png"
               alt="Growth"
               fill
               className="object-contain"
-              onError={(e) => {
-                (e.target as any).src = "/post-property/property_submitted_success.png";
-              }}
+              priority
             />
           </div>
         </div>
 
         {/* Right: Recommendation to improve your score (Span 6) */}
-        <div className="lg:col-span-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs space-y-3.5">
+        <div className="lg:col-span-6 rounded-xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-3">
           <h4 className="text-base font-bold text-[#0B132B]">
             Recommendation to improve your score
           </h4>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {[
               {
                 id: "photo",
-                icon: "🖼️",
+                icon: "/icon/health-score/Frame (5).png",
                 title: "Add high quality interior photo",
                 desc: "Properties with 15+ photos get 2x more views.",
                 btn: "Add photo",
                 pct: "+15%",
-                badgeColor: "bg-rose-50 text-rose-600 border-rose-100",
+                badgeColor: "bg-[#FFF3F5] text-[#FF4D6D] border-[#FFE0E6]",
               },
               {
                 id: "price",
-                icon: "🏷️",
+                icon: "/icon/health-score/Frame (3).png",
                 title: "Update price and availability",
                 desc: "Keep your pricing updated to attract serious buyers.",
                 btn: "Add photo",
                 pct: "+10%",
-                badgeColor: "bg-amber-50 text-amber-600 border-amber-100",
+                badgeColor: "bg-[#FFFBEB] text-[#F59E0B] border-[#FEF3C7]",
               },
               {
                 id: "floor",
-                icon: "📐",
+                icon: "/icon/health-score/floor-plan-svgrepo-com 1.png",
                 title: "Upload floor plan",
                 desc: "Floor plans help buyers understand the space better.",
                 btn: "Add photo",
                 pct: "+5%",
-                badgeColor: "bg-blue-50 text-blue-600 border-blue-100",
+                badgeColor: "bg-[#FFF1F2] text-[#F43F5E] border-[#FFE4E6]",
               },
             ].map((rec) => (
               <div
                 key={rec.id}
-                className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3 hover:border-slate-300 transition-colors"
+                className="p-3 rounded-xl border border-slate-200/80 bg-white flex items-center justify-between gap-3 hover:border-slate-300 transition-colors"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-2xl">{rec.icon}</span>
+                  <div className="w-8 h-8 rounded-lg bg-[#FFF7ED] flex items-center justify-center shrink-0 p-1.5">
+                    <Image
+                      src={rec.icon}
+                      alt={rec.title}
+                      width={20}
+                      height={20}
+                      className="object-contain"
+                    />
+                  </div>
                   <div className="min-w-0">
                     <h5 className="text-xs font-bold text-[#0B132B] truncate">
                       {rec.title}
@@ -486,12 +631,13 @@ export default function PortalHealthScore  ()  {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
-                    className="px-3 py-1.5 rounded-xl border border-[#1865F2] hover:bg-blue-50 text-[#1865F2] text-[11px] font-bold transition-colors cursor-pointer"
+                    onClick={() => handleActionClick(rec.title)}
+                    className="px-3 py-1.5 rounded-lg border border-[#2563EB] hover:bg-blue-50 text-[#2563EB] text-[11px] font-semibold transition-colors cursor-pointer whitespace-nowrap"
                   >
                     {rec.btn}
                   </button>
                   <span
-                    className={`px-2 py-1 rounded-lg border text-[11px] font-extrabold ${rec.badgeColor}`}
+                    className={`px-2 py-0.5 rounded-md border text-[11px] font-bold ${rec.badgeColor}`}
                   >
                     {rec.pct}
                   </span>
@@ -503,4 +649,4 @@ export default function PortalHealthScore  ()  {
       </div>
     </div>
   );
-};
+}

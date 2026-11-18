@@ -67,7 +67,7 @@ const INITIAL_PROPERTIES = [
     views: "1.2 K",
     leads: "128",
     location: "Sector 124, Noida",
-    image: "/images/properties/tower-popular-figma.jpg",
+    image: "/images/properties/terraces-max-estate-clean.png",
   },
   {
     id: "prop-2",
@@ -116,7 +116,7 @@ const INITIAL_PROJECTS = [
     launchDate: "Jan 2024",
     possession: "Dec 2026",
     status: "Under Construction",
-    image: "/images/properties/tower-popular-figma.jpg",
+    image: "/images/properties/terraces-max-estate-clean.png",
   },
   {
     id: "proj-2",
@@ -409,6 +409,27 @@ export const PortalProperties = ({
     toast.success("Property removed successfully");
   };
 
+  const handleToggleSoldOrRented = (id: string, currentStatus: string) => {
+    const isCurrentlySold = currentStatus === "Sold" || currentStatus === "Rented";
+    const newStatus = isCurrentlySold ? "On Going" : "Sold";
+    const updated = propertiesList.map((p) =>
+      p.id === id ? { ...p, status: newStatus } : p
+    );
+    setPropertiesList(updated);
+    try {
+      const stored = localStorage.getItem("roofin_user_properties");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const mapped = parsed.map((p: any) =>
+          p.id === id ? { ...p, status: newStatus } : p
+        );
+        localStorage.setItem("roofin_user_properties", JSON.stringify(mapped));
+      }
+    } catch (err) {}
+    setActiveMenuId(null);
+    toast.success(`Property marked as ${newStatus}`);
+  };
+
   const handleAddProject = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProjectName.trim()) {
@@ -426,7 +447,7 @@ export const PortalProperties = ({
       launchDate: "Current Quarter",
       possession: "2027",
       status: "Newly Launched",
-      image: "/images/properties/tower-popular-figma.jpg",
+      image: "/images/properties/terraces-max-estate-clean.png",
     };
     setProjectsList([created, ...projectsList]);
     setIsAddProjectModalOpen(false);
@@ -476,7 +497,7 @@ export const PortalProperties = ({
   });
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white shadow-2xs font-jakarta overflow-hidden">
+    <div className="rounded-xl border border-slate-200/80 bg-white shadow-2xs font-jakarta overflow-hidden">
       {/* 1. Horizontal Navigation Tabs Strip (Figma 1:1) */}
       <div className="border-b border-slate-200 px-6 pt-3 flex items-center gap-7 overflow-x-auto no-scrollbar">
         {NAV_TABS.map((tab) => {
@@ -493,10 +514,13 @@ export const PortalProperties = ({
                   : "text-slate-600 hover:text-[#1865F2]"
               }`}
             >
-              {IconComponent && (
-                <IconComponent
-                  size={17}
-                  className={isActive ? "text-[#1865F2]" : "text-slate-400"}
+              {tab.id === "my-properties" && (
+                <Image
+                  src="/icon/hero/property-deal-house.svg"
+                  alt="My properties"
+                  width={18}
+                  height={15}
+                  className="object-contain shrink-0"
                 />
               )}
               <span>{tab.label}</span>
@@ -615,6 +639,14 @@ export const PortalProperties = ({
                 />
               </div>
 
+              <button
+                type="button"
+                className="h-8.5 px-3 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              >
+                <SlidersHorizontal size={13} className="text-slate-500" />
+                <span>Filter</span>
+              </button>
+
               {(searchVal ||
                 filterType !== "property Type" ||
                 filterLocation !== "Location" ||
@@ -636,9 +668,10 @@ export const PortalProperties = ({
           </div>
 
           {/* Property Cards List */}
-          <div className="space-y-3 pt-1">
+          {/* Property Rows matching Figma 1:1 with divider lines and rigid column alignment */}
+          <div className="divide-y divide-slate-100 bg-white pt-1 overflow-x-auto no-scrollbar">
             {filteredProperties.length === 0 ? (
-              <div className="py-12 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+              <div className="py-12 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
                 <Home size={32} className="mx-auto text-slate-400 mb-2" />
                 <p className="text-sm font-bold text-slate-700">No properties found</p>
                 <p className="text-xs text-slate-400 mt-0.5">Try adjusting your filters or search keywords</p>
@@ -653,107 +686,119 @@ export const PortalProperties = ({
                 return (
                   <div
                     key={p.id}
-                    className="rounded-2xl border border-slate-100 hover:border-slate-200 hover:shadow-xs transition-all p-3 sm:p-4 bg-white flex flex-col md:flex-row md:items-center justify-between gap-4 relative"
+                    className="py-3 px-1 flex items-center min-w-[980px] hover:bg-slate-50/60 transition-colors relative"
                   >
-                    {/* Left group */}
-                    <div className="flex items-center gap-3.5 min-w-0">
+                    {/* 1. Checkbox */}
+                    <div className="w-6 shrink-0 flex items-center">
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleSelect(p.id)}
-                        className="w-4 h-4 rounded border-slate-300 text-[#1865F2] focus:ring-0 cursor-pointer shrink-0"
+                        className="w-4 h-4 rounded border-slate-300 text-[#1865F2] focus:ring-0 cursor-pointer"
                       />
-
-                      <div
-                        onClick={() => handleOpenPreview(p)}
-                        className="relative w-28 h-18 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/70 cursor-pointer group"
-                      >
-                        <Image
-                          src={p.image}
-                          alt={p.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-
-                      <div className="min-w-0">
-                        <h4
-                          onClick={() => handleOpenPreview(p)}
-                          className="text-[15.5px] font-bold text-[#0B132B] truncate cursor-pointer hover:text-[#1865F2] transition-colors leading-snug"
-                        >
-                          {p.title}
-                        </h4>
-                        <p className="text-[12px] text-slate-400 truncate mt-0.5">
-                          {p.subtitle}
-                        </p>
-                      </div>
                     </div>
 
-                    {/* Middle & Right group */}
-                    <div className="flex flex-wrap items-center gap-5 sm:gap-7 shrink-0">
-                      <div className="min-w-[70px]">
-                        <span className="text-[16px] font-bold text-[#0B132B]">
-                          {p.price}
-                        </span>
-                      </div>
+                    {/* 2. Image Thumbnail */}
+                    <div
+                      onClick={() => handleOpenPreview(p)}
+                      className="relative w-36 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/70 cursor-pointer group ml-3"
+                    >
+                      <Image
+                        src={p.image}
+                        alt={p.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
 
-                      <div className="min-w-[80px]">
-                        <span
-                          className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold text-center ${
-                            isUnderReview
-                              ? "bg-amber-50 text-amber-600 border border-amber-200"
-                              : isSold
-                              ? "bg-slate-100 text-slate-600"
-                              : "bg-[#E8F8F0] text-[#00BA63]"
-                          }`}
-                        >
-                          {p.status}
-                        </span>
-                      </div>
+                    {/* 3. Title & Subtitle */}
+                    <div className="w-48 shrink-0 min-w-0 ml-4">
+                      <h4
+                        onClick={() => handleOpenPreview(p)}
+                        className="text-[14.5px] font-bold text-[#0B132B] truncate cursor-pointer hover:text-[#1865F2] transition-colors leading-snug"
+                      >
+                        {p.title}
+                      </h4>
+                      <p className="text-[12px] text-slate-400 truncate mt-0.5">
+                        {p.subtitle}
+                      </p>
+                    </div>
 
-                      <div className="text-center min-w-[45px]">
-                        <span className="block text-[14px] font-bold text-[#0B132B] leading-tight">
-                          {p.views}
-                        </span>
-                        <span className="block text-[11px] text-slate-400 font-medium">
-                          Views
-                        </span>
-                      </div>
+                    {/* 4. Price */}
+                    <div className="w-32 shrink-0 ml-3">
+                      <span className="text-[15.5px] font-bold text-[#0B132B]">
+                        {p.price}
+                      </span>
+                    </div>
 
-                      <div className="text-center min-w-[45px]">
-                        <span className="block text-[14px] font-bold text-[#0B132B] leading-tight">
-                          {p.leads}
-                        </span>
-                        <span className="block text-[11px] text-slate-400 font-medium">
-                          Leads
-                        </span>
-                      </div>
+                    {/* 5. Status Badge */}
+                    <div className="w-28 shrink-0 ml-2">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-md text-[11px] font-semibold text-center whitespace-nowrap ${
+                          isUnderReview
+                            ? "bg-amber-50 text-amber-600 border border-amber-200"
+                            : isSold
+                            ? "bg-slate-100 text-slate-600"
+                            : "bg-[#E8F8F0] text-[#00BA63]"
+                        }`}
+                      >
+                        {p.status}
+                      </span>
+                    </div>
 
-                      <div className="flex items-center gap-1.5 text-slate-600 min-w-[140px]">
-                        <MapPin size={15} className="text-slate-500 shrink-0" />
-                        <span className="text-[13px] font-normal truncate">
-                          {p.location}
-                        </span>
-                      </div>
+                    {/* 6. Views */}
+                    <div className="w-16 shrink-0 text-center ml-2">
+                      <span className="block text-[14px] font-bold text-[#0B132B] leading-tight">
+                        {p.views}
+                      </span>
+                      <span className="block text-[11px] text-slate-400 font-medium">
+                        Views
+                      </span>
+                    </div>
 
-                      <div className="flex items-center gap-2 relative">
+                    {/* 7. Leads */}
+                    <div className="w-16 shrink-0 text-center ml-2">
+                      <span className="block text-[14px] font-bold text-[#0B132B] leading-tight">
+                        {p.leads}
+                      </span>
+                      <span className="block text-[11px] text-slate-400 font-medium">
+                        Leads
+                      </span>
+                    </div>
+
+                    {/* 8. Location */}
+                    <div className="flex-1 min-w-[160px] flex items-center gap-2 text-slate-600 ml-4 truncate">
+                      <Image
+                        src="/icon/hero/location-pin-slate.svg"
+                        alt="Location"
+                        width={14}
+                        height={17}
+                        className="object-contain shrink-0"
+                      />
+                      <span className="text-[13px] font-normal text-[#475569] truncate">
+                        {p.location}
+                      </span>
+                    </div>
+
+                    {/* 9. Actions */}
+                    <div className="flex items-center gap-2 ml-auto shrink-0 relative">
+                      <button
+                        type="button"
+                        onClick={() => handleEditProperty(p)}
+                        className="px-4 py-1.5 rounded-lg border border-blue-100 bg-[#F0F5FF] hover:bg-blue-100 text-[#1865F2] text-[12px] font-semibold transition-colors cursor-pointer"
+                      >
+                        Edit
+                      </button>
+
+                      <div className="relative">
                         <button
                           type="button"
-                          onClick={() => handleEditProperty(p)}
-                          className="px-4 py-1.5 rounded-lg border border-blue-100 bg-[#F0F5FF] hover:bg-blue-100 text-[#1865F2] text-[12px] font-semibold transition-colors cursor-pointer"
+                          onClick={() => setActiveMenuId(isMenuOpen ? null : p.id)}
+                          className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                          title="More options"
                         >
-                          Edit
+                          <MoreVertical size={15} />
                         </button>
-
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setActiveMenuId(isMenuOpen ? null : p.id)}
-                            className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-                            title="More options"
-                          >
-                            <MoreVertical size={15} />
-                          </button>
 
                           {isMenuOpen && (
                             <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg z-30 text-xs">
@@ -797,6 +842,15 @@ export const PortalProperties = ({
 
                               <button
                                 type="button"
+                                onClick={() => handleToggleSoldOrRented(p.id, p.status)}
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 font-medium transition-colors cursor-pointer text-left"
+                              >
+                                <CheckCircle2 size={14} className="text-slate-400" />
+                                <span>{p.status === "Sold" ? "Mark as Available" : "Mark as Sold / Rented"}</span>
+                              </button>
+
+                              <button
+                                type="button"
                                 onClick={() => handleDeleteProperty(p.id)}
                                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-semibold transition-colors cursor-pointer text-left"
                               >
@@ -808,7 +862,6 @@ export const PortalProperties = ({
                         </div>
                       </div>
                     </div>
-                  </div>
                 );
               })
             )}
@@ -847,7 +900,7 @@ export const PortalProperties = ({
               return (
                 <div
                   key={proj.id}
-                  className="rounded-2xl border border-slate-200/80 bg-white p-4 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="rounded-xl border border-slate-200/80 bg-white p-4 hover:shadow-md transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="relative w-full h-36 rounded-xl overflow-hidden bg-slate-100 mb-3 border border-slate-200/60">
@@ -955,7 +1008,7 @@ export const PortalProperties = ({
               .map((lead) => (
                 <div
                   key={lead.id}
-                  className="rounded-2xl border border-slate-200/80 bg-white p-4 hover:shadow-xs transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="rounded-xl border border-slate-200/80 bg-white p-4 hover:shadow-xs transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3.5">
                     <div className="w-11 h-11 rounded-full bg-[#EAF2FF] text-[#1865F2] font-black text-sm flex items-center justify-center shrink-0">
@@ -1027,7 +1080,7 @@ export const PortalProperties = ({
             {BUYER_SEARCH_DATA.map((b) => (
               <div
                 key={b.id}
-                className="rounded-2xl border border-slate-200/80 bg-white p-5 hover:border-blue-200 hover:shadow-xs transition-all flex flex-col justify-between"
+                className="rounded-xl border border-slate-200/80 bg-white p-5 hover:border-blue-200 hover:shadow-xs transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -1102,7 +1155,7 @@ export const PortalProperties = ({
             ].map((card, i) => (
               <div
                 key={i}
-                className="p-4 rounded-2xl border border-slate-200/80 bg-white shadow-2xs hover:border-blue-200 transition-all"
+                className="p-4 rounded-xl border border-slate-200/80 bg-white shadow-2xs hover:border-blue-200 transition-all"
               >
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                   {card.loc}
@@ -1126,7 +1179,7 @@ export const PortalProperties = ({
             ))}
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+          <div className="p-5 rounded-xl bg-slate-50 border border-slate-200/80">
             <h4 className="text-[14px] font-bold text-[#0B132B] mb-2">
               💡 Pricing Recommendation For Your Active Listings
             </h4>
@@ -1174,7 +1227,7 @@ export const PortalProperties = ({
             ].map((infra, idx) => (
               <div
                 key={idx}
-                className="p-5 rounded-2xl border border-slate-200/80 bg-white shadow-2xs hover:border-blue-200 transition-all flex flex-col justify-between"
+                className="p-5 rounded-xl border border-slate-200/80 bg-white shadow-2xs hover:border-blue-200 transition-all flex flex-col justify-between"
               >
                 <div>
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-[#1865F2]">
@@ -1217,17 +1270,17 @@ export const PortalProperties = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-white border border-slate-200">
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
               <span className="text-xs text-slate-400 font-medium">Inventory Absorption Rate</span>
               <p className="text-xl font-bold text-[#0B132B] mt-1">2.4 Months</p>
               <p className="text-[11px] text-emerald-600 mt-1">Lowest inventory holding in 5 years</p>
             </div>
-            <div className="p-4 rounded-2xl bg-white border border-slate-200">
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
               <span className="text-xs text-slate-400 font-medium">Ready-To-Move Premium</span>
               <p className="text-xl font-bold text-[#0B132B] mt-1">+18.5%</p>
               <p className="text-[11px] text-blue-600 mt-1">Buyers willing to pay premium for possession</p>
             </div>
-            <div className="p-4 rounded-2xl bg-white border border-slate-200">
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
               <span className="text-xs text-slate-400 font-medium">Avg Inquiry Response Time</span>
               <p className="text-xl font-bold text-[#0B132B] mt-1">&lt; 14 Minutes</p>
               <p className="text-[11px] text-slate-500 mt-1">Top converting agents respond in 15 mins</p>
@@ -1253,7 +1306,7 @@ export const PortalProperties = ({
             <button
               type="button"
               onClick={() => toast.success("Select a buyer from your CRM to schedule a new site visit")}
-              className="px-4 py-2 rounded-xl bg-[#1865F2] hover:bg-blue-700 text-white font-semibold text-xs cursor-pointer shadow-sm"
+              className="px-4 py-2 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-semibold text-xs cursor-pointer shadow-sm"
             >
               + Schedule Visit
             </button>
@@ -1263,10 +1316,10 @@ export const PortalProperties = ({
             {siteVisitsList.map((sv) => (
               <div
                 key={sv.id}
-                className="rounded-2xl border border-slate-200/80 bg-white p-4 hover:shadow-xs transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="rounded-xl border border-slate-200/80 bg-white p-4 hover:shadow-xs transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#EAF2FF] text-[#1865F2] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-[#EAF2FF] text-[#1865F2] flex items-center justify-center shrink-0">
                     <CalendarCheck size={18} />
                   </div>
                   <div>
@@ -1296,14 +1349,14 @@ export const PortalProperties = ({
                     <button
                       type="button"
                       onClick={() => handleConfirmSiteVisit(sv.id)}
-                      className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold cursor-pointer transition-colors"
+                      className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold cursor-pointer transition-colors"
                     >
                       Confirm Visit
                     </button>
                   )}
                   <a
                     href={`tel:${sv.phone}`}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:text-[#1865F2] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:text-[#1865F2] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                   >
                     <Phone size={13} className="text-[#1865F2]" />
                     <span>Call Buyer</span>
@@ -1318,7 +1371,7 @@ export const PortalProperties = ({
       {/* Add Project Modal */}
       {isAddProjectModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-lg font-bold text-[#0B132B]">Add New Project</h3>
               <button

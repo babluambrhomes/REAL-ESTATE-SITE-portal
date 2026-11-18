@@ -13,14 +13,13 @@ import {
 import { Calendar, MoreHorizontal, TrendingUp } from "lucide-react";
 
 const LEADS_CHART_DATA = [
-  { date: "1 Jun", terraces: 22, ats: 30 },
+  { date: "1 Jun", terraces: 20, ats: 30 },
   { date: "5 Jun", terraces: 35, ats: 42 },
-  { date: "10 Jun", terraces: 45, ats: 58 },
-  { date: "13 Jun", terraces: 38, ats: 60 },
-  { date: "15 Jun", terraces: 50, ats: 95 },
-  { date: "20 Jun", terraces: 42, ats: 120 },
-  { date: "25 Jun", terraces: 55, ats: 75 },
-  { date: "30 Jun", terraces: 30, ats: 45 },
+  { date: "10 Jun", terraces: 45, ats: 55 },
+  { date: "15 Jun", terraces: 38, ats: 60 },
+  { date: "20 Jun", terraces: 42, ats: 95 },
+  { date: "25 Jun", terraces: 55, ats: 70 },
+  { date: "30 Jun", terraces: 28, ats: 40 },
 ];
 
 const PIPELINE_DATA = [
@@ -30,38 +29,38 @@ const PIPELINE_DATA = [
     pillBg: "bg-[#EAF2FF]",
     pillText: "text-[#1865F2]",
     barColor: "bg-[#1865F2]",
-    width: "65%",
+    width: "75%",
   },
   {
     stage: "Contacted",
     count: 62,
-    pillBg: "bg-[#F3E8FF]",
-    pillText: "text-[#9333EA]",
-    barColor: "bg-[#9333EA]",
-    width: "50%",
+    pillBg: "bg-[#F3EAFF]",
+    pillText: "text-[#8B5CF6]",
+    barColor: "bg-[#8B5CF6]",
+    width: "55%",
   },
   {
     stage: "Interested",
     count: 30,
-    pillBg: "bg-[#DCFCE7]",
-    pillText: "text-[#16A34A]",
-    barColor: "bg-[#16A34A]",
-    width: "35%",
+    pillBg: "bg-[#E3FAF2]",
+    pillText: "text-[#00B86B]",
+    barColor: "bg-[#00B86B]",
+    width: "38%",
   },
   {
     stage: "Site Visit",
     count: 20,
-    pillBg: "bg-[#FFEDD5]",
-    pillText: "text-[#EA580C]",
-    barColor: "bg-[#EA580C]",
-    width: "25%",
+    pillBg: "bg-[#FFF3E6]",
+    pillText: "text-[#F97316]",
+    barColor: "bg-[#F97316]",
+    width: "24%",
   },
   {
     stage: "Closed",
     count: 10,
-    pillBg: "bg-[#CCFBF1]",
-    pillText: "text-[#0D9488]",
-    barColor: "bg-[#0D9488]",
+    pillBg: "bg-[#E3FAF5]",
+    pillText: "text-[#0EA5A0]",
+    barColor: "bg-[#0EA5A0]",
     width: "14%",
   },
 ];
@@ -135,17 +134,17 @@ export const PortalCharts = () => {
 
         {/* Area Chart Container */}
         <div className="relative w-full h-[250px] pt-4">
-          {/* Active Tooltip Badge matching Figma 1:1 pinned at 13 June */}
-          <div className="absolute left-[41%] top-0 z-10 hidden sm:flex flex-col items-center pointer-events-none">
+          {/* Active Tooltip Badge matching Figma 1:1 pinned at 15 June */}
+          <div className="absolute left-[47%] top-0 z-10 hidden sm:flex flex-col items-center pointer-events-none">
             <div className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-lg text-center min-w-[105px]">
               <span className="text-[10px] text-slate-400 block font-medium leading-tight">
-                13 June
+                15 June
               </span>
               <span className="text-[14px] font-bold text-[#0B132B] block leading-tight mt-0.5">
                 60 Leads
               </span>
               <span className="text-[9.5px] text-slate-400 block font-normal leading-tight mt-0.5">
-                ATS Knightsbridge
+                ATS knightsbridge
               </span>
             </div>
             {/* Dashed connector line */}
@@ -224,12 +223,12 @@ export const PortalCharts = () => {
         <div className="py-2 space-y-4 my-auto">
           {PIPELINE_DATA.map((item, idx) => (
             <div key={idx} className="flex items-center gap-3">
-              {/* Pill badge with count matching Figma */}
-              <span
-                className={`w-9 text-center text-[12px] font-bold px-2 py-0.5 rounded-md ${item.pillBg} ${item.pillText} shrink-0`}
+              {/* Circular badge with count matching Figma 1:1 */}
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-[12.5px] font-bold ${item.pillBg} ${item.pillText} shrink-0`}
               >
                 {item.count}
-              </span>
+              </div>
 
               {/* Stage label */}
               <span className="w-24 text-[13px] font-medium text-slate-700 shrink-0">

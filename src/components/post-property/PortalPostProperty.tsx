@@ -9,6 +9,7 @@ import {
   MapPin,
   Check,
   ChevronRight,
+  ChevronDown,
   Headphones,
   ArrowRight,
   ArrowLeft,
@@ -87,15 +88,46 @@ const PLOT_SUBTYPES = [
 
 // Step 5 Amenities
 const AMENITY_ICONS = [
-  { id: "gym", label: "GYM", icon: "🏋️", selected: true },
-  { id: "pool", label: "Swimming pool", icon: "🏊", selected: true },
-  { id: "gas", label: "Gas pipeline", icon: "🔥", selected: true },
-  { id: "parking", label: "Parking", icon: "🚗", selected: true },
-  { id: "club", label: "Club House", icon: "🏠", selected: true },
-  { id: "park", label: "Children Park", icon: "🎠", selected: false },
-  { id: "cctv", label: "Cctv surveillia..", icon: "📹", selected: false },
-  { id: "security", label: "7x24 Security", icon: "🛡️", selected: false },
-  { id: "smart", label: "Smart tab", icon: "📱", selected: false },
+  { id: "gym", label: "GYM", iconSrc: "/icon/amenities/gym.svg", selected: true },
+  { id: "pool", label: "Swimming pool", iconSrc: "/icon/amenities/swimming-pool.svg", selected: true },
+  { id: "gas", label: "Gas pipeline", iconSrc: "/icon/amenities/gas-pipeline.svg", selected: true },
+  { id: "parking", label: "Parking", iconSrc: "/icon/amenities/parking.svg", selected: true },
+  { id: "club", label: "Club House", iconSrc: "/icon/amenities/club-house.svg", selected: true },
+  { id: "park", label: "Children Park", iconSrc: "/icon/amenities/children-park.svg", selected: false },
+  { id: "cctv", label: "CCTV Surveillance", iconSrc: "/icon/amenities/cctv.svg", selected: false },
+  { id: "security", label: "7x24 Security", iconSrc: "/icon/amenities/security.svg", selected: false },
+  { id: "smart", label: "Smart Tap", iconSrc: "/icon/amenities/smart-tap.svg", selected: false },
+];
+
+const INCLUSION_LIST = [
+  { key: "ac", label: "AC", iconSrc: "/semifurnished_icon/ac.png" },
+  { key: "bed", label: "Bed", iconSrc: "/semifurnished_icon/bed.png" },
+  { key: "lift", label: "Lift", iconSrc: "/semifurnished_icon/lift.png" },
+  { key: "tv", label: "TV", iconSrc: "/semifurnished_icon/tv.png" },
+  { key: "sofa", label: "Sofa", iconSrc: "/semifurnished_icon/sofa.png" },
+  { key: "bathroom", label: "Geyser", iconSrc: "/semifurnished_icon/bathroom.png" },
+  { key: "cabinet", label: "Cabinet", iconSrc: "/semifurnished_icon/cabinet.png" },
+  { key: "refrigerator", label: "Refrigerator", iconSrc: "/semifurnished_icon/refrigerator.png" },
+  { key: "stove", label: "Stove", iconSrc: "/semifurnished_icon/stove.png" },
+  { key: "washing", label: "Washing Machine", iconSrc: "/semifurnished_icon/washing_machine.png" },
+  { key: "dining", label: "Dining Table", iconSrc: "/semifurnished_icon/dining_table.png" },
+  { key: "microwave", label: "Microwave", iconSrc: "/semifurnished_icon/microwave.png" },
+  { key: "power", label: "Power Backup", iconSrc: "/semifurnished_icon/power_backup.png" },
+];
+
+const LOCATION_ADVANTAGES_LIST = [
+  { id: "metro", label: "Metro Station", iconSrc: "/icon/location-advantages/metro.svg" },
+  { id: "mall", label: "Mall", iconSrc: "/icon/location-advantages/mall.svg" },
+  { id: "school", label: "School", iconSrc: "/icon/location-advantages/school.svg" },
+  { id: "airport", label: "Airport", iconSrc: "/icon/location-advantages/airport.svg" },
+  { id: "hospital", label: "Hospital", iconSrc: "/icon/location-advantages/hospital.svg" },
+  { id: "bank", label: "Bank", iconSrc: "/icon/location-advantages/bank.svg" },
+];
+
+const OTHER_ADVANTAGES_LIST = [
+  { id: "well-maintained", title: "Well Maintained", sub: "Professional Management", iconSrc: "/icon/other-advantages/well-maintained.svg" },
+  { id: "active-comm", title: "Active Community", sub: "Regular Events & Activities", iconSrc: "/icon/other-advantages/active-community.svg" },
+  { id: "clean-green", title: "Clean & Green", sub: "Hygienic & Eco-Friendly", iconSrc: "/icon/other-advantages/clean-green.svg" },
 ];
 
 export const PortalPostProperty = ({
@@ -117,6 +149,9 @@ export const PortalPostProperty = ({
   const replacePhotoInputRef = useRef<HTMLInputElement>(null);
 
   // Step 1: Basics
+  const [sellerRole, setSellerRole] = useState<"Owner" | "Agent/Broker" | "Builder/Developer">("Owner");
+  const [agencyName, setAgencyName] = useState("");
+  const [reraNumber, setReraNumber] = useState("");
   const [propertyType, setPropertyType] = useState<"Residential" | "Commercial" | "Plot/Land">("Residential");
   const [propertyCategory, setPropertyCategory] = useState<"Sell" | "Rent" | "PG/Co-Living">("Sell");
   const [societyName, setSocietyName] = useState("");
@@ -148,8 +183,9 @@ export const PortalPostProperty = ({
     lift: 2,
     tv: 2,
     sofa: 2,
-    ac2: 2,
+    bathroom: 2,
     cabinet: 2,
+    stove: 1,
   });
   const [floorPlanCounts, setFloorPlanCounts] = useState<Record<string, number>>({
     "Living Room": 1,
@@ -163,6 +199,10 @@ export const PortalPostProperty = ({
   const [salesPrice, setSalesPrice] = useState("1,42,00,000");
   const [pricePerSqft, setPricePerSqft] = useState("11,181");
   const [totalPrice, setTotalPrice] = useState("1,42,00,000");
+  const [monthlyRent, setMonthlyRent] = useState("35,000");
+  const [securityDeposit, setSecurityDeposit] = useState("70,000");
+  const [preferredTenant, setPreferredTenant] = useState("Any");
+  const [availableFrom, setAvailableFrom] = useState("Immediate");
   const [maintenanceCharges, setMaintenanceCharges] = useState("2,500");
   const [bookingAmount, setBookingAmount] = useState("50,000");
   const [negotiable, setNegotiable] = useState("Yes, sightly negotiable");
@@ -212,6 +252,13 @@ export const PortalPostProperty = ({
       const savedDraft = localStorage.getItem("roofin_post_property_draft");
       if (savedDraft) {
         const d = JSON.parse(savedDraft);
+        if (d.sellerRole) setSellerRole(d.sellerRole);
+        if (d.agencyName) setAgencyName(d.agencyName);
+        if (d.reraNumber) setReraNumber(d.reraNumber);
+        if (d.monthlyRent) setMonthlyRent(d.monthlyRent);
+        if (d.securityDeposit) setSecurityDeposit(d.securityDeposit);
+        if (d.preferredTenant) setPreferredTenant(d.preferredTenant);
+        if (d.availableFrom) setAvailableFrom(d.availableFrom);
         if (d.propertyType) setPropertyType(d.propertyType);
         if (d.propertyCategory) setPropertyCategory(d.propertyCategory);
         if (d.societyName) setSocietyName(d.societyName);
@@ -261,6 +308,7 @@ export const PortalPostProperty = ({
       id: `upload-${Date.now()}-${idx}`,
       tag: `0${uploadedPhotos.length + idx + 1} ${file.name.slice(0, 14)}`,
       img: URL.createObjectURL(file),
+      file,
     }));
     setUploadedPhotos((prev) => [...prev, ...newPhotos]);
     toast.success(`${files.length} photo(s) added successfully!`);
@@ -296,7 +344,7 @@ export const PortalPostProperty = ({
     setUploadedPhotos((prev) =>
       prev.map((p) =>
         p.id === selectedPhotoId
-          ? { ...p, img: newUrl, tag: `${p.tag.slice(0, 3)} ${file.name.slice(0, 14)}` }
+          ? { ...p, img: newUrl, tag: `${p.tag.slice(0, 3)} ${file.name.slice(0, 14)}`, file }
           : p
       )
     );
@@ -614,8 +662,15 @@ export const PortalPostProperty = ({
   const handleSaveDraft = () => {
     try {
       const draftData = {
+        sellerRole,
+        agencyName,
+        reraNumber,
         propertyType,
         propertyCategory,
+        monthlyRent,
+        securityDeposit,
+        preferredTenant,
+        availableFrom,
         societyName,
         selectedSubtype,
         locationSearch,
@@ -740,6 +795,80 @@ export const PortalPostProperty = ({
             <p className="text-xs sm:text-[13px] text-slate-400 mt-0.5">
               Start with the basic property information.
             </p>
+          </div>
+
+          {/* Row 0: Seller Role / Posting As */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-2">
+              I am posting as <span className="text-rose-500">*</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { id: "Owner", label: "Individual Owner", desc: "Property owned by me", icon: User },
+                { id: "Agent/Broker", label: "Broker / Agent", desc: "Certified real estate agent", icon: Building2 },
+                { id: "Builder/Developer", label: "Builder / Developer", desc: "Direct project developer", icon: Building },
+              ].map((role) => {
+                const Icon = role.icon;
+                const isSelected = sellerRole === role.id;
+                return (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setSellerRole(role.id as any)}
+                    className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
+                      isSelected
+                        ? "border-2 border-[#1865F2] bg-[#EAF2FF] shadow-2xs"
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                        isSelected ? "bg-[#1865F2] text-white" : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      <Icon size={17} />
+                    </div>
+                    <div>
+                      <span className={`block text-xs font-bold ${isSelected ? "text-[#1865F2]" : "text-slate-800"}`}>
+                        {role.label}
+                      </span>
+                      <span className="block text-[11px] text-slate-400 font-normal">
+                        {role.desc}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {(sellerRole === "Agent/Broker" || sellerRole === "Builder/Developer") && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-100 animate-in fade-in duration-200">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    {sellerRole === "Agent/Broker" ? "Agency / Firm Name" : "Developer / Company Name"}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={sellerRole === "Agent/Broker" ? "e.g. Apex Realty" : "e.g. Max Estates"}
+                    value={agencyName}
+                    onChange={(e) => setAgencyName(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                    RERA Registration Number (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. UPRERAAGT12345"
+                    value={reraNumber}
+                    onChange={(e) => setReraNumber(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Row 1: Property Type & Property Category */}
@@ -1138,140 +1267,147 @@ export const PortalPostProperty = ({
         </div>
       )}
 
-      {/* ==================== STEP 3: DETAILS ==================== */}
+      {/* ==================== STEP 3: DETAILS (EXACT FIGMA 1:1) ==================== */}
       {currentStep === 3 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
-          <div>
-            <h3 className="text-[17px] font-bold text-[#0B132B]">
-              3. Details
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Share the key details about property.
-            </p>
+        <div className="space-y-4">
+          {/* 1. Top Configuration & Specs Row Card */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                  Construction Status <span className="text-rose-500">*</span>
+                </label>
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                  {["1 BHK", "2 BHK", "3 BHK", "4 BHK", "5+ BHK"].map((val) => (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => setBhk(val)}
+                      className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-bold border transition-colors whitespace-nowrap cursor-pointer ${
+                        bhk === val
+                          ? "bg-[#EAF2FF] text-[#1865F2] border-[#1865F2]"
+                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      {val}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                  Build up Area <span className="text-rose-500">*</span>
+                </label>
+                <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden h-9 shadow-2xs bg-white">
+                  <input
+                    type="text"
+                    value={builtUpArea}
+                    onChange={(e) => setBuiltUpArea(e.target.value)}
+                    className="w-full px-2.5 text-xs text-slate-800 focus:outline-none"
+                  />
+                  <div className="relative border-l border-slate-200 h-full flex items-center bg-slate-50 px-2 text-[11px] text-slate-600 font-medium">
+                    <span>Sq.ft.</span>
+                    <ChevronDown size={11} className="ml-1 text-slate-400" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                  Floor number <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={floorNumber}
+                    onChange={(e) => setFloorNumber(e.target.value)}
+                    className="w-full h-9 pl-3 pr-7 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#1865F2] shadow-2xs font-medium"
+                  >
+                    <option value="1 Floor">1 Floor</option>
+                    <option value="2 Floor">2 Floor</option>
+                    <option value="3 Floor">3 Floor</option>
+                    <option value="4 Floor">4 Floor</option>
+                    <option value="5 Floor">5 Floor</option>
+                  </select>
+                  <ChevronDown
+                    size={12}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                  Total floor <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={totalFloor}
+                    onChange={(e) => setTotalFloor(e.target.value)}
+                    className="w-full h-9 pl-3 pr-7 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#1865F2] shadow-2xs font-medium"
+                  >
+                    <option value="10 Floor">10 Floor</option>
+                    <option value="14 Floor">14 Floor</option>
+                    <option value="18 Floor">18 Floor</option>
+                    <option value="22 Floor">22 Floor</option>
+                    <option value="28 Floor">28 Floor</option>
+                  </select>
+                  <ChevronDown
+                    size={12}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                  Construction Status <span className="text-rose-500">*</span>
+                </label>
+                <div className="flex items-center gap-1.5">
+                  {["Ready to Move", "Under Construction"].map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => setConstructionStatus(st)}
+                      className={`px-3 py-1.5 rounded-lg text-[10.5px] font-bold border transition-colors whitespace-nowrap cursor-pointer ${
+                        constructionStatus === st
+                          ? "bg-[#EAF2FF] text-[#1865F2] border-[#1865F2]"
+                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Top Configuration & Specs Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 pt-2">
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
-                Configuration <span className="text-rose-500">*</span>
-              </label>
-              <div className="flex items-center gap-1">
-                {["1 BHK", "2 BHK", "3 BHK", "4 BHK", "5+ BHK"].map((val) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => setBhk(val)}
-                    className={`px-2 py-1.5 rounded-lg text-[10.5px] font-semibold border transition-colors ${
-                      bhk === val
-                        ? "bg-[#1865F2] text-white border-[#1865F2]"
-                        : "bg-white text-slate-600 border-slate-200"
-                    }`}
-                  >
-                    {val}
-                  </button>
-                ))}
+          {/* 2. About Property Card */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xs space-y-3">
+            <div className="flex items-center gap-2 text-[14px] font-bold text-[#0B132B]">
+              <span className="w-1 h-4 bg-[#14A0F8] rounded-xs inline-block" />
+              <span>About Property</span>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-4 bg-white relative">
+              <div className="text-[12.5px] font-bold text-[#0B132B] mb-1.5">
+                Address : Sector 103 , Noida Ext
               </div>
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
-                Build up Area <span className="text-rose-500">*</span>
-              </label>
-              <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden h-9 shadow-2xs">
-                <input
-                  type="text"
-                  value={builtUpArea}
-                  onChange={(e) => setBuiltUpArea(e.target.value)}
-                  className="w-full px-2.5 text-xs text-slate-800 focus:outline-none"
-                />
-                <span className="px-2 text-[11px] text-slate-400 bg-slate-50 border-l border-slate-200 h-full flex items-center">
-                  Sq.ft
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
-                Floor number <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={floorNumber}
-                onChange={(e) => setFloorNumber(e.target.value)}
-                placeholder="e.g. 2nd Floor"
-                className="w-full h-9 px-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white shadow-2xs focus:outline-none focus:border-[#1865F2]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
-                Total Floor <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={totalFloor}
-                onChange={(e) => setTotalFloor(e.target.value)}
-                placeholder="e.g. 18 Floors"
-                className="w-full h-9 px-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white shadow-2xs focus:outline-none focus:border-[#1865F2]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
-                Construction Status <span className="text-rose-500">*</span>
-              </label>
-              <div className="flex items-center gap-1">
-                {["Ready to Move", "Under Construction"].map((st) => (
-                  <button
-                    key={st}
-                    type="button"
-                    onClick={() => setConstructionStatus(st)}
-                    className={`px-2 py-1.5 rounded-lg text-[10.5px] font-semibold border transition-colors whitespace-nowrap ${
-                      constructionStatus === st
-                        ? "bg-[#1865F2] text-white border-[#1865F2]"
-                        : "bg-white text-slate-600 border-slate-200"
-                    }`}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* About Property Textarea */}
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-1.5">
-              <h4 className="text-[13px] font-bold text-[#1865F2] border-l-2 border-[#1865F2] pl-2">
-                About Property
-              </h4>
-              <button
-                type="button"
-                onClick={handleGenerateAiDescription}
-                className="text-[11px] font-semibold text-[#1865F2] hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer bg-blue-50/70 border border-blue-200 px-2.5 py-1 rounded-lg transition-colors"
-                title="Generate a description using property details"
-              >
-                <Sparkles size={12} />
-                <span>Auto-generate with AI</span>
-              </button>
-            </div>
-            <div className="relative border border-slate-200 rounded-xl p-3 bg-white shadow-2xs focus-within:border-[#1865F2]">
               <textarea
-                rows={4}
+                rows={3}
                 value={aboutDescription}
                 onChange={(e) => setAboutDescription(e.target.value)}
-                className="w-full text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none resize-none leading-relaxed"
+                className="w-full text-xs text-slate-700 leading-relaxed focus:outline-none resize-none"
               />
-              <span className="block text-right text-[10.5px] text-slate-400 mt-1">
+              <span className="block text-right text-[11px] text-slate-400 mt-1 font-medium">
                 {aboutDescription.length}/500
               </span>
             </div>
           </div>
 
-          {/* Furnishing Type & Inclusions */}
-          <div className="pt-2">
-            <div className="flex flex-wrap items-center gap-6 mb-3">
+          {/* 3. Furnish Type, Facing & Inclusions Card */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xs space-y-4">
+            <div className="flex flex-wrap items-center gap-8">
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
                   Furnish Type <span className="text-rose-500">*</span>
@@ -1282,10 +1418,10 @@ export const PortalPostProperty = ({
                       key={f}
                       type="button"
                       onClick={() => setFurnishType(f)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
                         furnishType === f
-                          ? "bg-[#1865F2] text-white border-[#1865F2]"
-                          : "bg-white text-slate-600 border-slate-200"
+                          ? "bg-[#EAF2FF] text-[#1865F2] border-[#1865F2]"
+                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       {f}
@@ -1298,59 +1434,211 @@ export const PortalPostProperty = ({
                 <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
                   Facing <span className="text-rose-500">*</span>
                 </label>
-                <select
-                  value={facing}
-                  onChange={(e) => setFacing(e.target.value)}
-                  className="h-9 px-3 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white"
-                >
-                  <option value="East">East</option>
-                  <option value="North">North</option>
-                  <option value="West">West</option>
-                  <option value="South">South</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={facing}
+                    onChange={(e) => setFacing(e.target.value)}
+                    className="h-8.5 pl-3 pr-7 rounded-lg border border-slate-200 text-xs text-slate-800 bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#1865F2] font-medium"
+                  >
+                    <option value="East">East</option>
+                    <option value="North">North</option>
+                    <option value="West">West</option>
+                    <option value="South">South</option>
+                  </select>
+                  <ChevronDown
+                    size={12}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Stepper Counters for Inclusions */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+            {/* Inclusions Unified 7-Column Grid matching Figma 1:1 */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 pt-2">
+              {/* Row 1: 7 Items with Steppers */}
               {[
-                { key: "ac", label: "AC", icon: "❄️" },
-                { key: "bed", label: "Bed", icon: "🛏️" },
-                { key: "lift", label: "Lift", icon: "🚪" },
-                { key: "tv", label: "TV", icon: "📺" },
-                { key: "sofa", label: "Sofa", icon: "🛋️" },
-                { key: "ac2", label: "AC", icon: "❄️" },
-                { key: "cabinet", label: "Cabinet", icon: "🗄️" },
+                { key: "ac", label: "AC", iconSrc: "/semifurnished_icon/ac.png" },
+                { key: "bed", label: "Bed", iconSrc: "/semifurnished_icon/bed.png" },
+                { key: "lift", label: "Lift", iconSrc: "/semifurnished_icon/lift.png" },
+                { key: "tv", label: "TV", iconSrc: "/semifurnished_icon/tv.png" },
+                { key: "sofa", label: "Sofa", iconSrc: "/semifurnished_icon/sofa.png" },
+                { key: "bathroom", label: "AC", iconSrc: "/semifurnished_icon/bathroom.png" },
+                { key: "cabinet", label: "Cabinet", iconSrc: "/semifurnished_icon/cabinet.png" },
               ].map((item) => (
                 <div
                   key={item.key}
-                  className="rounded-xl border border-slate-200 p-2 flex items-center justify-between bg-slate-50/50"
+                  className="h-14 rounded-lg border border-[#E2E8F0] px-2.5 py-1.5 flex items-center justify-between bg-white hover:border-slate-300 transition-colors shadow-2xs"
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm">{item.icon}</span>
-                    <span className="text-[11px] font-bold text-slate-700">{item.label}</span>
+                  <div className="w-8 h-8 rounded-full bg-[#EEF4FE] flex items-center justify-center shrink-0">
+                    <Image
+                      src={item.iconSrc}
+                      alt={item.label}
+                      width={20}
+                      height={20}
+                      className="object-contain"
+                    />
                   </div>
-                  <div className="flex items-center gap-1 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => updateInclusionCount(item.key, -1)}
-                      className="w-4 h-4 rounded bg-slate-200 flex items-center justify-center text-[10px]"
-                    >
-                      -
-                    </button>
-                    <span className="font-bold text-[11px] w-3 text-center">
-                      {inclusions[item.key] || 0}
+                  <div className="flex flex-col items-center justify-center flex-1 ml-1 min-w-0">
+                    <span className="text-[11px] font-bold text-slate-700 leading-none whitespace-nowrap mb-1">
+                      {item.label}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => updateInclusionCount(item.key, 1)}
-                      className="w-4 h-4 rounded bg-slate-200 flex items-center justify-center text-[10px]"
-                    >
-                      +
-                    </button>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold leading-none">
+                      <button
+                        type="button"
+                        onClick={() => updateInclusionCount(item.key, -1)}
+                        className="border-0 bg-transparent outline-none p-0 text-slate-400 hover:text-slate-700 cursor-pointer text-xs font-bold leading-none select-none"
+                      >
+                        -
+                      </button>
+                      <span className="text-[#1865F2] font-bold text-xs min-w-[10px] text-center leading-none">
+                        {inclusions[item.key] || 2}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => updateInclusionCount(item.key, 1)}
+                        className="border-0 bg-transparent outline-none p-0 text-slate-400 hover:text-slate-700 cursor-pointer text-xs font-bold leading-none select-none"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
+
+              {/* Row 2: 6 Items perfectly aligned with columns 1-6 in the exact same 7-col grid */}
+              {[
+                { key: "refrigerator", lines: ["Refrigera", "tor"], iconSrc: "/semifurnished_icon/refrigerator.png" },
+                { key: "stove", lines: ["Stove"], iconSrc: "/semifurnished_icon/stove.png" },
+                { key: "washing", lines: ["Washing", "Machine"], iconSrc: "/semifurnished_icon/washing_machine.png" },
+                { key: "dining", lines: ["Dining", "Table"], iconSrc: "/semifurnished_icon/dining_table.png" },
+                { key: "microwave", lines: ["Microwave"], iconSrc: "/semifurnished_icon/microwave.png" },
+                { key: "power", lines: ["Power", "Backup"], iconSrc: "/semifurnished_icon/power_backup.png" },
+              ].map((item) => {
+                const isSelected = (inclusions[item.key] ?? 0) > 0;
+                return (
+                  <div
+                    key={item.key}
+                    onClick={() => updateInclusionCount(item.key, isSelected ? -1 : 1)}
+                    className={`h-14 rounded-lg border px-3 py-1.5 flex items-center gap-2.5 transition-colors cursor-pointer shadow-2xs ${
+                      isSelected
+                        ? "border-[#1865F2] bg-[#F2F7FF]"
+                        : "border-[#E2E8F0] bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#EEF4FE] flex items-center justify-center shrink-0">
+                      <Image
+                        src={item.iconSrc}
+                        alt={item.lines.join(" ")}
+                        width={20}
+                        height={20}
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-center min-w-0 text-[11px] font-bold text-slate-700 leading-tight">
+                      {item.lines.map((line, idx) => (
+                        <span key={idx} className="block leading-tight">
+                          {line}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 4. Floor Plan Card (Figma 1:1) */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-[14px] font-bold text-[#0B132B]">
+              <span className="w-1 h-4 bg-[#14A0F8] rounded-xs inline-block" />
+              <span>Floor Plan</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              {[
+                "Living Room",
+                "Modular Kitchen",
+                "Bedrooms",
+                "Bathrooms",
+                "Balconies",
+              ].map((fp) => (
+                <div key={fp} className="space-y-1.5">
+                  <label className="block text-[11px] font-bold text-slate-700">
+                    {fp} <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={floorPlanCounts[fp] || 1}
+                      onChange={(e) =>
+                        setFloorPlanCounts((prev) => ({
+                          ...prev,
+                          [fp]: parseInt(e.target.value, 10),
+                        }))
+                      }
+                      className="w-full h-9 pl-3 pr-7 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#1865F2] shadow-2xs font-medium"
+                    >
+                      <option value={1}>1</option>
+                      <option value={2}>2</option>
+                      <option value={3}>3</option>
+                      <option value={4}>4</option>
+                      <option value={5}>5</option>
+                    </select>
+                    <ChevronDown
+                      size={12}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 5. Key Highlights Card (Figma 1:1) */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-[14px] font-bold text-[#0B132B]">
+              <span className="w-1 h-4 bg-[#14A0F8] rounded-xs inline-block" />
+              <span>Key Highlights</span>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-1">
+              {/* Left Column Checklist */}
+              <div className="lg:col-span-7 space-y-3.5">
+                {[
+                  "Prime Location With Excellent Connectivity",
+                  "Well- Ventilated Home With Ample Natural Light",
+                  "Modern Design With Premium Fittings",
+                  "Vastu Compliant Home",
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 pb-2.5 border-b border-slate-200"
+                  >
+                    <Check size={16} className="text-[#1865F2] shrink-0" strokeWidth={2.5} />
+                    <span className="text-xs font-semibold text-slate-700">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right Column Checkboxes */}
+              <div className="lg:col-span-5 grid grid-cols-2 gap-3.5 content-start">
+                {[
+                  { id: "gated-1", label: "Gated Society", checked: true },
+                  { id: "server", label: "Server Room", checked: true },
+                  { id: "corner", label: "Corner Property", checked: false },
+                  { id: "vastu", label: "Vastu Compliant", checked: false },
+                  { id: "gated-2", label: "Gated Society", checked: true },
+                ].map((item) => (
+                  <label
+                    key={item.id}
+                    className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-700 select-none"
+                  >
+                    <input
+                      type="checkbox"
+                      defaultChecked={item.checked}
+                      className="w-4.5 h-4.5 rounded border-slate-300 text-[#1865F2] focus:ring-0 cursor-pointer"
+                    />
+                    <span>{item.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -1369,87 +1657,164 @@ export const PortalPostProperty = ({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Box: Listing Price */}
+            {/* Left Box: Listing Price (Conditional for Sell vs Rent) */}
             <div className="rounded-2xl border border-slate-200 p-5 space-y-4">
-              <h4 className="text-[13px] font-bold text-[#0B132B]">Listing Price</h4>
+              <h4 className="text-[13px] font-bold text-[#0B132B]">
+                {propertyCategory === "Sell" ? "Sales Pricing" : "Rental Pricing"}
+              </h4>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Sales Price <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-3 text-xs text-slate-400">₹</span>
-                    <input
-                      type="text"
-                      value={salesPrice}
-                      onChange={(e) => setSalesPrice(e.target.value)}
-                      className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Price per sq.ft <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-3 text-xs text-slate-400">₹</span>
-                    <input
-                      type="text"
-                      value={pricePerSqft}
-                      onChange={(e) => setPricePerSqft(e.target.value)}
-                      className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Total Price <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="absolute left-3 text-xs text-slate-400">₹</span>
-                    <input
-                      type="text"
-                      value={totalPrice}
-                      onChange={(e) => setTotalPrice(e.target.value)}
-                      className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Discount <span className="text-rose-500">*</span>
-                  </label>
-                  {(() => {
-                    const sp = parseInt(salesPrice.replace(/[^\d]/g, ""), 10);
-                    const tp = parseInt(totalPrice.replace(/[^\d]/g, ""), 10);
-                    const disc =
-                      !isNaN(sp) && !isNaN(tp) && sp > tp && sp > 0
-                        ? Math.round(((sp - tp) / sp) * 100)
-                        : 0;
-                    return (
-                      <div className="h-10 px-3 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-xs font-extrabold text-rose-600">
-                        {disc > 0 ? `${disc}% OFF` : "Standard Price"}
+              {propertyCategory === "Sell" ? (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Sales Price <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs text-slate-400">₹</span>
+                        <input
+                          type="text"
+                          value={salesPrice}
+                          onChange={(e) => setSalesPrice(e.target.value)}
+                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                        />
                       </div>
-                    );
-                  })()}
-                </div>
-              </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Price per sq.ft <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs text-slate-400">₹</span>
+                        <input
+                          type="text"
+                          value={pricePerSqft}
+                          onChange={(e) => setPricePerSqft(e.target.value)}
+                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Total Price <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs text-slate-400">₹</span>
+                        <input
+                          type="text"
+                          value={totalPrice}
+                          onChange={(e) => setTotalPrice(e.target.value)}
+                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Discount <span className="text-rose-500">*</span>
+                      </label>
+                      {(() => {
+                        const sp = parseInt(salesPrice.replace(/[^\d]/g, ""), 10);
+                        const tp = parseInt(totalPrice.replace(/[^\d]/g, ""), 10);
+                        const disc =
+                          !isNaN(sp) && !isNaN(tp) && sp > tp && sp > 0
+                            ? Math.round(((sp - tp) / sp) * 100)
+                            : 0;
+                        return (
+                          <div className="h-10 px-3 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-xs font-extrabold text-rose-600">
+                            {disc > 0 ? `${disc}% OFF` : "Standard Price"}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Monthly Rent <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs text-slate-400">₹</span>
+                        <input
+                          type="text"
+                          value={monthlyRent}
+                          onChange={(e) => {
+                            setMonthlyRent(e.target.value);
+                            setTotalPrice(e.target.value);
+                          }}
+                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Security Deposit <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs text-slate-400">₹</span>
+                        <input
+                          type="text"
+                          value={securityDeposit}
+                          onChange={(e) => setSecurityDeposit(e.target.value)}
+                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1865F2]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Available From
+                      </label>
+                      <select
+                        value={availableFrom}
+                        onChange={(e) => setAvailableFrom(e.target.value)}
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
+                      >
+                        <option>Immediate</option>
+                        <option>Within 15 days</option>
+                        <option>Within 30 days</option>
+                        <option>Next month</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                        Preferred Tenant
+                      </label>
+                      <select
+                        value={preferredTenant}
+                        onChange={(e) => setPreferredTenant(e.target.value)}
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
+                      >
+                        <option>Any (Family / Bachelor)</option>
+                        <option>Family Only</option>
+                        <option>Bachelors Only</option>
+                        <option>Company Lease</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Price Suggestion Box */}
               <div className="p-3 rounded-xl bg-[#E6F9F0] border border-[#B3F0D2] flex items-center gap-3">
                 <span className="text-lg">📊</span>
                 <div>
                   <h5 className="text-[13px] font-extrabold text-[#00A859]">
-                    ₹1.95 cr – ₹1.52cr
+                    {propertyCategory === "Sell" ? "₹1.15 cr – ₹1.52 cr" : "₹28,000 – ₹42,000 / month"}
                   </h5>
                   <p className="text-[10px] text-slate-600">
-                    Typical range for similar properties in Greater Noida West
+                    Typical market range for similar properties in {selectedLocality || "Noida"}
                   </p>
                 </div>
               </div>
@@ -1555,14 +1920,22 @@ export const PortalPostProperty = ({
                     prev.map((a, i) => (i === idx ? { ...a, selected: !a.selected } : a))
                   );
                 }}
-                className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer ${
+                className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center gap-2 transition-all cursor-pointer ${
                   item.selected
                     ? "border-[#1865F2] bg-blue-50/60 shadow-2xs"
                     : "border-slate-200 bg-white hover:border-slate-300"
                 }`}
               >
-                <span className="text-xl">{item.icon}</span>
-                <span className="text-[10px] font-semibold text-slate-700 truncate max-w-full">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                  <Image
+                    src={item.iconSrc}
+                    alt={item.label}
+                    width={26}
+                    height={26}
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-[10.5px] font-semibold text-slate-700 truncate max-w-full">
                   {item.label}
                 </span>
               </div>
@@ -1577,13 +1950,22 @@ export const PortalPostProperty = ({
                 Location advantage
               </h4>
 
-              <div className="grid grid-cols-3 gap-3">
-                {["Metro Station", "Mall", "School", "Airport", "Hospital", "Bank"].map((loc) => (
-                  <div key={loc} className="rounded-xl border border-slate-200 p-2.5 bg-slate-50/50">
-                    <span className="block text-[11px] font-bold text-slate-700 truncate mb-1">
-                      {loc}
-                    </span>
-                    <select className="w-full text-[10px] h-7 px-1.5 rounded-lg border border-slate-200 bg-white">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {LOCATION_ADVANTAGES_LIST.map((loc) => (
+                  <div key={loc.id} className="rounded-xl border border-slate-200 p-2.5 bg-white shadow-2xs">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Image
+                        src={loc.iconSrc}
+                        alt={loc.label}
+                        width={16}
+                        height={16}
+                        className="object-contain"
+                      />
+                      <span className="block text-[11px] font-bold text-slate-700 truncate">
+                        {loc.label}
+                      </span>
+                    </div>
+                    <select className="w-full text-[10px] h-7 px-1.5 rounded-lg border border-slate-200 bg-slate-50/50 font-medium">
                       <option>10 Min</option>
                       <option>15 Min</option>
                       <option>20 Min</option>
@@ -1600,11 +1982,7 @@ export const PortalPostProperty = ({
               </h4>
 
               <div className="space-y-2">
-                {[
-                  { id: "well-maintained", title: "Well Maintained", sub: "Professional Management" },
-                  { id: "active-comm", title: "Active Community", sub: "Regular Events & Activities" },
-                  { id: "clean-green", title: "Clean & Green", sub: "Hygienic & Eco-Friendly" },
-                ].map((adv) => {
+                {OTHER_ADVANTAGES_LIST.map((adv) => {
                   const isChecked = selectedAdvantages.includes(adv.id);
                   return (
                     <div
@@ -1614,14 +1992,25 @@ export const PortalPostProperty = ({
                           isChecked ? prev.filter((i) => i !== adv.id) : [...prev, adv.id]
                         )
                       }
-                      className="p-3 rounded-xl border border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
+                      className="p-3 rounded-xl border border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer bg-white"
                     >
-                      <div>
-                        <h5 className="text-[12px] font-bold text-[#0B132B]">{adv.title}</h5>
-                        <p className="text-[10px] text-slate-500">{adv.sub}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50/70 flex items-center justify-center shrink-0 p-1.5">
+                          <Image
+                            src={adv.iconSrc}
+                            alt={adv.title}
+                            width={22}
+                            height={22}
+                            className="object-contain"
+                          />
+                        </div>
+                        <div>
+                          <h5 className="text-[12px] font-bold text-[#0B132B]">{adv.title}</h5>
+                          <p className="text-[10px] text-slate-500">{adv.sub}</p>
+                        </div>
                       </div>
                       <div
-                        className={`w-6 h-6 rounded-lg border flex items-center justify-center ${
+                        className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${
                           isChecked
                             ? "bg-[#1865F2] border-[#1865F2] text-white"
                             : "border-slate-300 bg-white"
@@ -2393,39 +2782,39 @@ export const PortalPostProperty = ({
                 </div>
 
                 {/* Inclusions Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-                  {[
-                    { key: "ac", label: "AC", icon: "❄️" },
-                    { key: "bed", label: "Bed", icon: "🛏️" },
-                    { key: "lift", label: "Lift", icon: "🚪" },
-                    { key: "tv", label: "TV", icon: "📺" },
-                    { key: "sofa", label: "Sofa", icon: "🛋️" },
-                    { key: "ac2", label: "AC", icon: "❄️" },
-                    { key: "cabinet", label: "Cabinet", icon: "🗄️" },
-                  ].map((item) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+                  {INCLUSION_LIST.map((item) => (
                     <div
                       key={item.key}
-                      className="rounded-xl border border-slate-200 p-2 flex items-center justify-between bg-slate-50/50"
+                      className="rounded-xl border border-slate-200 p-2.5 flex items-center justify-between bg-white hover:border-slate-300 transition-colors shadow-2xs"
                     >
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm">{item.icon}</span>
-                        <span className="text-[11px] font-bold text-slate-700">{item.label}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-6 h-6 rounded-lg bg-blue-50/80 p-1 flex items-center justify-center shrink-0">
+                          <Image
+                            src={item.iconSrc}
+                            alt={item.label}
+                            width={18}
+                            height={18}
+                            className="object-contain"
+                          />
+                        </div>
+                        <span className="text-[11px] font-bold text-slate-700 truncate">{item.label}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-xs">
+                      <div className="flex items-center gap-1 text-xs shrink-0">
                         <button
                           type="button"
                           onClick={() => updateInclusionCount(item.key, -1)}
-                          className="w-4 h-4 rounded bg-slate-200 flex items-center justify-center text-[10px] cursor-pointer"
+                          className="w-5 h-5 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-[11px] font-bold text-slate-700 cursor-pointer transition-colors"
                         >
                           -
                         </button>
-                        <span className="font-bold text-[11px] w-3 text-center">
+                        <span className="font-bold text-[11px] w-3.5 text-center text-[#1865F2]">
                           {inclusions[item.key] || 0}
                         </span>
                         <button
                           type="button"
                           onClick={() => updateInclusionCount(item.key, 1)}
-                          className="w-4 h-4 rounded bg-slate-200 flex items-center justify-center text-[10px] cursor-pointer"
+                          className="w-5 h-5 rounded bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-[11px] font-bold text-[#1865F2] cursor-pointer transition-colors"
                         >
                           +
                         </button>
@@ -2744,13 +3133,21 @@ export const PortalPostProperty = ({
                         prev.map((a, i) => (i === idx ? { ...a, selected: !a.selected } : a))
                       );
                     }}
-                    className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center gap-2 transition-all cursor-pointer ${
                       item.selected
                         ? "border-[#1865F2] bg-blue-50/60 shadow-2xs"
                         : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                   >
-                    <span className="text-xl">{item.icon}</span>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                      <Image
+                        src={item.iconSrc}
+                        alt={item.label}
+                        width={24}
+                        height={24}
+                        className="object-contain"
+                      />
+                    </div>
                     <span className="text-[10px] font-semibold text-slate-700 truncate max-w-full">
                       {item.label}
                     </span>
@@ -2766,12 +3163,21 @@ export const PortalPostProperty = ({
                     Location advantage
                   </h5>
 
-                  <div className="grid grid-cols-3 gap-3">
-                    {["Metro Station", "Mall", "School", "Airport", "Hospital", "Bank"].map((loc) => (
-                      <div key={loc} className="rounded-xl border border-slate-200 p-2.5 bg-slate-50/50">
-                        <span className="block text-[11px] font-bold text-slate-700 truncate mb-1">
-                          {loc}
-                        </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {LOCATION_ADVANTAGES_LIST.map((loc) => (
+                      <div key={loc.id} className="rounded-xl border border-slate-200 p-2.5 bg-slate-50/50">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <Image
+                            src={loc.iconSrc}
+                            alt={loc.label}
+                            width={16}
+                            height={16}
+                            className="object-contain"
+                          />
+                          <span className="block text-[11px] font-bold text-slate-700 truncate">
+                            {loc.label}
+                          </span>
+                        </div>
                         <select className="w-full text-[10px] h-7 px-1.5 rounded-lg border border-slate-200 bg-white">
                           <option>Min</option>
                           <option>5 Min</option>
@@ -2790,11 +3196,7 @@ export const PortalPostProperty = ({
                   </h5>
 
                   <div className="space-y-2">
-                    {[
-                      { id: "well-maintained", title: "Well Maintained", sub: "Professional Management" },
-                      { id: "active-comm", title: "Active Community", sub: "Regular Events & Activities" },
-                      { id: "clean-green", title: "Clean & Green", sub: "Hygienic & Eco-Friendly" },
-                    ].map((adv) => {
+                    {OTHER_ADVANTAGES_LIST.map((adv) => {
                       const isChecked = selectedAdvantages.includes(adv.id);
                       return (
                         <div
@@ -2806,12 +3208,23 @@ export const PortalPostProperty = ({
                           }
                           className="p-3 rounded-xl border border-slate-200 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
                         >
-                          <div>
-                            <h6 className="text-[12px] font-bold text-[#0B132B]">{adv.title}</h6>
-                            <p className="text-[10px] text-slate-500">{adv.sub}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                              <Image
+                                src={adv.iconSrc}
+                                alt={adv.title}
+                                width={18}
+                                height={18}
+                                className="object-contain"
+                              />
+                            </div>
+                            <div>
+                              <h6 className="text-[12px] font-bold text-[#0B132B]">{adv.title}</h6>
+                              <p className="text-[10px] text-slate-500">{adv.sub}</p>
+                            </div>
                           </div>
                           <div
-                            className={`w-6 h-6 rounded-lg border flex items-center justify-center ${
+                            className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${
                               isChecked
                                 ? "bg-[#1865F2] border-[#1865F2] text-white"
                                 : "border-slate-300 bg-white"
@@ -3172,9 +3585,10 @@ export const PortalPostProperty = ({
           {/* 3D Isometric Building with Confetti Illustration */}
           <div className="relative w-72 sm:w-84 h-64 sm:h-76 mx-auto">
             <Image
-              src="/post-property/property_submitted_success.png"
+              src="/icon/status/submit.svg"
               alt="Property Submitted Successfully"
               fill
+              unoptimized
               className="object-contain"
               priority
             />

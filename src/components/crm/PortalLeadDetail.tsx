@@ -68,14 +68,14 @@ export const PortalLeadDetail = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           {/* Avatar & Identity */}
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#1865F2] shrink-0">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md shrink-0 bg-slate-100">
               <Image
-                src="/images/properties/luxury-living-room.jpg"
+                src="/customers/arti_sharma.png"
                 alt="Arti Sharma"
                 fill
                 className="object-cover"
                 onError={(e) => {
-                  (e.target as any).src = "/images/properties/villa-popular-figma.jpg";
+                  (e.target as any).src = "/customers/customer_woman_suit.jpg";
                 }}
               />
             </div>
@@ -88,7 +88,7 @@ export const PortalLeadDetail = ({
                 <button
                   type="button"
                   onClick={onChangePriority || (() => setInternalPriorityModalOpen(true))}
-                  className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[11px] font-extrabold flex items-center gap-1 cursor-pointer hover:bg-rose-200 transition-colors"
+                  className="px-2.5 py-0.5 rounded-full bg-[#FFE4E6] text-[#E11D48] text-[11px] font-bold flex items-center gap-1 cursor-pointer hover:bg-rose-200 transition-colors"
                 >
                   <span>🔥</span>
                   <span>{leadPriority}</span>
@@ -108,7 +108,7 @@ export const PortalLeadDetail = ({
                 </span>
                 <span className="text-slate-300">•</span>
                 <span className="flex items-center gap-1">
-                  <Phone size={12} className="text-slate-400" />
+                  <MapPin size={12} className="text-slate-400" />
                   +91 6424452322
                 </span>
               </div>
@@ -160,14 +160,20 @@ export const PortalLeadDetail = ({
             <div>
               <span className="text-[10px] text-slate-400 block font-medium">Assigned To</span>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <div className="w-5 h-5 rounded-full bg-blue-100 text-[#1865F2] text-[10px] font-bold flex items-center justify-center">
-                  A
+                <div className="relative w-5 h-5 rounded-full overflow-hidden shrink-0 bg-slate-200 border border-slate-300">
+                  <Image
+                    src="/customers/arti_sharma.png"
+                    alt="Arti Sharma"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <span className="font-bold text-slate-800">Arti Sharma</span>
               </div>
             </div>
             <button
               type="button"
+              onClick={() => setInternalReassignModalOpen(true)}
               className="text-xs font-bold text-[#1865F2] hover:underline cursor-pointer"
             >
               Reassign
@@ -180,39 +186,74 @@ export const PortalLeadDetail = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column (Span 8) */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Customer Requirement */}
+          {/* Customer Requirement (Figma 1:1 Side-by-Side) */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4">
             <h4 className="text-sm font-bold text-[#0B132B]">
               Customer Requirement
             </h4>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-400 block font-medium">Property Type</span>
-                <span className="font-bold text-slate-800">3 BHK Apartment</span>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
+              {/* Left: 4 Cards (2x2 grid) */}
+              <div className="md:col-span-7 grid grid-cols-2 gap-3 text-xs">
+                {/* Property Type */}
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#F5EEFF] flex items-center justify-center text-[#9333EA] shrink-0">
+                    <Building size={16} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-medium">Property Type</span>
+                    <span className="font-bold text-slate-800 text-xs">3 BHK Apartment</span>
+                  </div>
+                </div>
+
+                {/* Budget */}
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#E6F8F0] flex items-center justify-center text-[#10B981] shrink-0">
+                    <DollarSign size={16} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-medium">Budget</span>
+                    <span className="font-bold text-slate-800 text-xs">₹1.2 - 1.5 Cr</span>
+                  </div>
+                </div>
+
+                {/* Preferred Location */}
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#EAF2FF] flex items-center justify-center text-[#1865F2] shrink-0">
+                    <MapPin size={16} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-medium">Preferred Location</span>
+                    <span className="font-bold text-slate-800 text-xs">Noida sector 124</span>
+                  </div>
+                </div>
+
+                {/* Property Status */}
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#FFF7ED] flex items-center justify-center text-[#EA580C] shrink-0">
+                    <CheckCircle size={16} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-medium">Property Status</span>
+                    <span className="font-bold text-slate-800 text-xs">Ready to move</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-400 block font-medium">Budget</span>
-                <span className="font-bold text-slate-800">₹1.2 - 1.5 Cr</span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-400 block font-medium">Preferred Location</span>
-                <span className="font-bold text-slate-800">Noida sector 124</span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-400 block font-medium">Property Status</span>
-                <span className="font-bold text-slate-800">Ready to move</span>
-              </div>
-            </div>
-
-            {/* Requirement Details Note */}
-            <div>
-              <span className="block text-[11px] font-bold text-slate-700 mb-1">Requirement details</span>
-              <div className="h-20 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3 text-xs text-slate-600 leading-relaxed">
-                Looking for east facing 3BHK flat on 2nd to 5th floor with park view and modular kitchen.
+              {/* Right: Requirement details (Ruled Lines Box) */}
+              <div className="md:col-span-5 flex flex-col justify-between">
+                <span className="block text-[11px] font-bold text-slate-700 mb-1.5">Requirement details</span>
+                <div className="flex-1 min-h-[90px] rounded-xl border border-slate-200/90 bg-white p-3.5 text-xs text-slate-700 leading-relaxed shadow-2xs relative flex flex-col justify-around">
+                  <div className="border-b border-slate-100 pb-1">
+                    <span className="text-[11px] text-slate-600">Looking for east facing 3BHK flat on 2nd to 5th floor.</span>
+                  </div>
+                  <div className="border-b border-slate-100 py-1">
+                    <span className="text-[11px] text-slate-600">Park view and modular kitchen required.</span>
+                  </div>
+                  <div className="pt-1">
+                    <span className="text-[11px] text-slate-400 italic">Ready for immediate booking.</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -333,8 +374,13 @@ export const PortalLeadDetail = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-blue-100 text-[#1865F2] font-bold text-[10px] flex items-center justify-center">
-                        A
+                      <div className="relative w-6 h-6 rounded-full overflow-hidden shrink-0 bg-slate-200 border border-slate-300">
+                        <Image
+                          src="/customers/arti_sharma.png"
+                          alt="Arti Sharma"
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                       <span className="text-xs font-bold text-[#0B132B]">
                         Arti sharma
@@ -469,10 +515,10 @@ export const PortalLeadDetail = ({
             </div>
           </div>
 
-          {/* Next Follow Up Card */}
+          {/* Next Follow Up Card (Figma 1:1) */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-[#0B132B]">Next Follow up</h4>
+              <h4 className="text-xs font-bold text-[#0B132B]">Next Fallow up</h4>
               <button
                 type="button"
                 onClick={() => setInternalVisitModalOpen(true)}
@@ -482,14 +528,14 @@ export const PortalLeadDetail = ({
               </button>
             </div>
 
-            <div className="flex items-center gap-3 py-1">
-              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-[#1865F2] shrink-0 font-bold text-xs">
-                ⏰
+            <div className="flex items-center gap-2.5 py-1">
+              <div className="w-7 h-7 rounded-full bg-[#EAF2FF] flex items-center justify-center text-[#1865F2] shrink-0 font-bold text-xs">
+                <Clock size={14} />
               </div>
-              <span className="text-xs font-bold text-rose-600">Today 4 PM</span>
+              <span className="text-xs font-bold text-[#EF4444]">Today 4 PM</span>
             </div>
 
-            <p className="text-[11px] text-slate-500 leading-snug">
+            <p className="text-[11.5px] text-slate-500 leading-snug">
               Call the customer for what they are intrested for.
             </p>
           </div>

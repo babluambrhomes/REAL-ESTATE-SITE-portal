@@ -42,15 +42,15 @@ const BUYER_DEMANDS = [
     budget: "₹ 1Cr",
     tag: "Med Demand",
     tagColor: "bg-[#FEF3C7] text-[#D97706]",
-    buyers: "84 buyers",
-    circleBg: "bg-[#DCFCE7]",
+    buyers: "64 buyers",
+    circleBg: "bg-[#FEF3C7]",
   },
   {
     title: "3 BHK In Noida Sector 150",
     budget: "₹ 1Cr",
     tag: "Low Demand",
     tagColor: "bg-[#FFE4E6] text-[#E11D48]",
-    buyers: "80 buyers",
+    buyers: "50 buyers",
     circleBg: "bg-[#FFEDD5]",
   },
   {
@@ -59,7 +59,7 @@ const BUYER_DEMANDS = [
     tag: "Low Demand",
     tagColor: "bg-[#FFE4E6] text-[#E11D48]",
     buyers: "42 buyers",
-    circleBg: "bg-[#EAF2FF]",
+    circleBg: "bg-[#FFE4E6]",
   },
 ];
 
@@ -95,9 +95,8 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
               {/* Icon & Details */}
               <div className="flex items-center gap-3 min-w-0">
                 <div
-                  className={`w-9 h-9 rounded-full ${item.circleBg} flex items-center justify-center shrink-0`}
+                  className={`w-9 h-9 rounded-full ${item.circleBg} flex items-center justify-center shrink-0 p-2`}
                 >
-                  <Building size={16} className="text-[#1865F2]" />
                 </div>
                 <div className="min-w-0">
                   <h5 className="text-[12.5px] font-bold text-[#0B132B] truncate leading-tight">
@@ -148,46 +147,17 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
 
         {/* Map Container with Centered Property Popup Card */}
         <div className="relative w-full h-[290px] rounded-xl overflow-hidden border border-slate-200/80 bg-slate-100 mt-2">
-          {/* Background Map Simulation */}
-          <div className="absolute inset-0 bg-[#E8ECEF] bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:16px_16px]">
-            {/* Roads & Region Labels */}
-            <div className="absolute inset-0 opacity-40">
-              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M-20,100 Q150,160 300,120 T500,200"
-                  fill="none"
-                  stroke="#FFFFFF"
-                  strokeWidth="8"
-                />
-                <path
-                  d="M100,-20 Q120,150 140,320"
-                  fill="none"
-                  stroke="#FFFFFF"
-                  strokeWidth="6"
-                />
-                <path
-                  d="M250,-20 Q220,140 280,320"
-                  fill="none"
-                  stroke="#FDE047"
-                  strokeWidth="5"
-                />
-              </svg>
-            </div>
-
-            <span className="absolute bottom-5 right-6 text-[15px] font-extrabold text-slate-400/80 tracking-wider">
-              Gurugram
-            </span>
-            <span className="absolute top-6 left-6 text-[13px] font-extrabold text-slate-400/80 tracking-wider">
-              Delhi
-            </span>
-            <span className="absolute top-8 right-8 text-[13px] font-extrabold text-slate-400/80 tracking-wider">
-              Noida
-            </span>
-
-            {/* Map Pin Dots */}
-            <div className="absolute top-12 left-16 w-3 h-3 rounded-full bg-[#1865F2] ring-4 ring-[#1865F2]/20" />
-            <div className="absolute bottom-16 left-24 w-3 h-3 rounded-full bg-[#1865F2] ring-4 ring-[#1865F2]/20" />
-            <div className="absolute bottom-10 right-20 w-3 h-3 rounded-full bg-[#1865F2] ring-4 ring-[#1865F2]/20" />
+          {/* Real Map Image from Figma */}
+          <div className="absolute inset-0">
+            <Image
+              src="/images/map-overview-exact.png"
+              alt="Market Overview Map"
+              fill
+              className="object-cover"
+              onError={(e) => {
+                (e.target as any).src = "/images/delhi-ncr-map-figma.png";
+              }}
+            />
           </div>
 
           {/* Floating Property Card on Map (Figma 1:1) */}
@@ -195,10 +165,13 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
             {/* Image Thumbnail with dots and close icon */}
             <div className="relative w-full h-22 rounded-xl overflow-hidden mb-2 bg-slate-100">
               <Image
-                src="/images/properties/tower-popular-figma.jpg"
+                src="/images/properties/terraces-villa-exact.png"
                 alt="The Terraces"
                 fill
                 className="object-cover"
+                onError={(e) => {
+                  (e.target as any).src = "/images/properties/tower-popular-figma.jpg";
+                }}
               />
               <button
                 type="button"
@@ -252,10 +225,16 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={onPostProperty}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-200 transition-all text-center cursor-pointer group shadow-2xs"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <Building size={20} />
+            <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <Image
+                src="/icon/quick-actions/post-property.svg"
+                alt="Post Property"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
             <span className="text-[12px] font-bold text-[#0B132B]">
               Post Property
@@ -266,10 +245,16 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("my-projects")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-200 transition-all text-center cursor-pointer group shadow-2xs"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <PlusCircle size={20} />
+            <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <Image
+                src="/icon/quick-actions/add-project.svg"
+                alt="Add Project"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
             <span className="text-[12px] font-bold text-[#0B132B]">
               Add Project
@@ -280,10 +265,16 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("crm-leads")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-200 transition-all text-center cursor-pointer group shadow-2xs"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <Users size={20} />
+            <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <Image
+                src="/icon/quick-actions/manage-leads.svg"
+                alt="Manage Leads"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
             <span className="text-[12px] font-bold text-[#0B132B]">
               Manage Leads
@@ -294,10 +285,16 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("crm-leads")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-200 transition-all text-center cursor-pointer group shadow-2xs"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <CalendarCheck size={20} />
+            <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <Image
+                src="/icon/quick-actions/schedule-visit.svg"
+                alt="Schedule Visit"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
             <span className="text-[12px] font-bold text-[#0B132B]">
               Schedule Visit
@@ -308,10 +305,16 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("boost-property")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-200 transition-all text-center cursor-pointer group shadow-2xs"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <Megaphone size={20} />
+            <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <Image
+                src="/icon/quick-actions/boost-listing.svg"
+                alt="Boost Listing"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
             <span className="text-[12px] font-bold text-[#0B132B]">
               Boost Listing
@@ -322,10 +325,16 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("analytics")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-200 transition-all text-center cursor-pointer group shadow-2xs"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1865F2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <Eye size={20} />
+            <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <Image
+                src="/icon/quick-actions/view-analytics.svg"
+                alt="View Analytics"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
             <span className="text-[12px] font-bold text-[#0B132B]">
               View Analytics

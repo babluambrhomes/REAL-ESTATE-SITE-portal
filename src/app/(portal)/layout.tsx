@@ -12,7 +12,7 @@ export default function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);

@@ -109,7 +109,7 @@ export default function PortalDraft () {
             </button>
 
             <Link
-              href='/property/edit/hjghj'
+              href="/property/add-new"
               className="px-6 py-2.5 rounded-xl bg-[#1865F2] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
             >
               <span>Resume Editing</span>

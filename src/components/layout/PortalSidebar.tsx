@@ -1,42 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  LayoutDashboard,
-  LayoutGrid,
-  Columns2,
-  Menu,
-  User,
-  Megaphone,
-  CreditCard,
-  Building2,
-  Building,
-  Home,
-  Users2,
-  Users,
-  FileText,
-  BarChart3,
-  Lightbulb,
-  Settings,
-  ChevronDown,
-  ChevronRight,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PlusCircle,
-  FolderGit2,
-  Sparkles,
-  Rocket,
-  CalendarCheck,
-  PhoneCall,
-  Kanban,
-  CheckSquare,
-  History,
-  Timer,
-} from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearAuth } from "@/store/slice/authSlice";
 
@@ -44,6 +12,32 @@ interface PortalSidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
 }
+
+const SidebarIcon = ({
+  src,
+  className = "w-[18px] h-[18px]",
+  alt = "",
+}: {
+  src: string;
+  className?: string;
+  alt?: string;
+}) => (
+  <span
+    role="img"
+    aria-label={alt}
+    className={`inline-block shrink-0 bg-current transition-colors ${className}`}
+    style={{
+      maskImage: `url('${src}')`,
+      WebkitMaskImage: `url('${src}')`,
+      maskRepeat: "no-repeat",
+      WebkitMaskRepeat: "no-repeat",
+      maskPosition: "center",
+      WebkitMaskPosition: "center",
+      maskSize: "contain",
+      WebkitMaskSize: "contain",
+    }}
+  />
+);
 
 export const PortalSidebar = ({
   collapsed,
@@ -58,10 +52,10 @@ export const PortalSidebar = ({
   const isCrmTab = (slug: string) => isCrmList && crmTab === slug;
   const isPropertiesSection =
     pathname.startsWith("/property") || pathname === "/projects";
+  const isHealthScore = pathname.startsWith("/property/health-score");
+  const isDiagnosis = pathname.startsWith("/property/performance-diagnosis");
   const isMyProperties =
-    pathname === "/property" ||
-    pathname.startsWith("/property/health-score") ||
-    pathname.startsWith("/property/performance-diagnosis");
+    pathname === "/property" && !isHealthScore && !isDiagnosis;
   const isMyPost = pathname === "/property/add-new";
   const isDrafts = pathname === "/property/drafts";
   const isBoost = pathname === "/upgrade-plane";
@@ -69,8 +63,18 @@ export const PortalSidebar = ({
   const { user } = useAppSelector((state) => state.auth);
 
   // Accordion state for dropdowns
-  const [propertiesOpen, setPropertiesOpen] = useState(true);
-  const [crmOpen, setCrmOpen] = useState(false);
+  const [propertiesOpen, setPropertiesOpen] = useState(!pathname.startsWith("/crm"));
+  const [crmOpen, setCrmOpen] = useState(pathname.startsWith("/crm"));
+
+  useEffect(() => {
+    if (pathname.startsWith("/crm")) {
+      setCrmOpen(true);
+      setPropertiesOpen(false);
+    } else if (pathname.startsWith("/property") || pathname === "/projects") {
+      setPropertiesOpen(true);
+      setCrmOpen(false);
+    }
+  }, [pathname]);
 
   const userName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
@@ -84,58 +88,64 @@ export const PortalSidebar = ({
 
   const navItemBase =
     "w-full flex items-center gap-3 rounded-xl text-[13px] transition-all cursor-pointer";
-  const activeItem = "bg-white text-[#1865F2] font-bold shadow-sm";
+  const activeItem = "bg-white text-[#1865F2] font-bold";
   const idleItem =
     "text-white/80 font-medium hover:bg-white/10 hover:text-white";
   const subItemBase =
-    "w-full text-left pl-3 pr-2 py-2 rounded-lg text-[12px] transition-all flex items-center gap-2.5 cursor-pointer";
-  const subActive = "bg-white text-[#1865F2] font-bold shadow-sm";
-  const subIdle = "text-white/70 font-medium hover:bg-white/10 hover:text-white";
+    "w-full text-left px-3 py-2 rounded-lg text-[12.5px] transition-colors flex items-center gap-2.5 cursor-pointer";
+  const subActive = "bg-[#EAF2FF] text-[#1865F2] font-bold";
+  const subIdle = "text-slate-700 font-medium hover:bg-slate-50 hover:text-[#1865F2]";
 
   return (
     <aside
-      className={`fixed top-0 left-0 bottom-0 z-40 bg-[#1865F2] text-white flex flex-col transition-all duration-300 ease-in-out select-none shadow-xl border-r border-white/10 ${
+      className={`fixed top-0 left-0 bottom-0 z-40 bg-[#1865F2] text-white flex flex-col transition-all duration-300 ease-in-out select-none border-r border-white/10 ${
         collapsed ? "w-[76px]" : "w-[240px]"
       }`}
     >
       {/* Brand + collapse toggle */}
       {collapsed ? (
-        <div className="flex flex-col items-center gap-2 pt-4 pb-3">
-          <Link
-            href="/"
-            className="relative h-7 w-7 hover:opacity-90 transition-opacity"
-            title="Roofin"
-          >
-            <Image
-              src="/layout/white_logo.png"
-              alt="Roofin"
-              fill
-              sizes="28px"
-              className="object-contain"
-            />
-          </Link>
+        <div className="flex flex-col items-center gap-3 pt-4 pb-3">
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="w-9 h-9 rounded-xl hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-xl hover:bg-white/10 text-white flex items-center justify-center transition-colors cursor-pointer"
             title="Expand sidebar"
           >
-            <Columns2 size={18} strokeWidth={2.2} />
+            <SidebarIcon
+              src="/icon/sidebar/toggle.svg"
+              className="w-[18px] h-[18px]"
+              alt="Toggle"
+            />
           </button>
+          <Link
+            href="/"
+            className="relative h-8 w-8 hover:opacity-90 transition-opacity flex items-center justify-center"
+            title="Roofin"
+          >
+            <Image
+              src="/icon/sidebar/roofin-logo-mark.svg"
+              alt="Roofin"
+              width={30}
+              height={30}
+              className="object-contain"
+              priority
+            />
+          </Link>
         </div>
       ) : (
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
           <Link
             href="/"
-            className="relative h-8 w-[112px] hover:opacity-90 transition-opacity"
+            className="relative h-8 w-[124px] hover:opacity-90 transition-opacity flex items-center"
             title="Roofin"
           >
             <Image
-              src="/layout/white_logo.png"
+              src="/icon/sidebar/roofin-logo-full.svg"
               alt="Roofin"
-              fill
-              sizes="112px"
+              width={124}
+              height={32}
               className="object-contain object-left"
+              priority
             />
           </Link>
           <button
@@ -144,7 +154,11 @@ export const PortalSidebar = ({
             className="w-9 h-9 rounded-xl hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
             title="Collapse sidebar"
           >
-            <Columns2 size={18} strokeWidth={2.2} />
+            <SidebarIcon
+              src="/icon/sidebar/toggle.svg"
+              className="w-[18px] h-[18px]"
+              alt="Collapse"
+            />
           </button>
         </div>
       )}
@@ -161,7 +175,11 @@ export const PortalSidebar = ({
             } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
             title="Dashboard"
           >
-            <LayoutGrid size={19} className="shrink-0" strokeWidth={2.2} />
+            <SidebarIcon
+              src="/icon/sidebar/dashboard.svg"
+              className="w-[18px] h-[18px]"
+              alt="Dashboard"
+            />
             {!collapsed && <span>Dashboard</span>}
           </button>
         </div>
@@ -175,12 +193,20 @@ export const PortalSidebar = ({
               setCrmOpen(false);
             }}
             className={`${navItemBase} justify-between ${
-              propertiesOpen || isPropertiesSection ? activeItem : idleItem
+              propertiesOpen
+                ? "bg-[#0A47BE] text-white font-bold shadow-inner"
+                : isPropertiesSection
+                ? activeItem
+                : idleItem
             } ${collapsed ? "h-11 w-11 mx-auto px-0 justify-center" : "px-3.5 py-2.5"}`}
             title="Properties"
           >
             <div className="flex items-center gap-3">
-              <CreditCard size={19} className="shrink-0" />
+              <SidebarIcon
+                src="/icon/sidebar/properties.svg"
+                className="w-[18px] h-[18px]"
+                alt="Properties"
+              />
               {!collapsed && <span>Properties</span>}
             </div>
             {!collapsed && (
@@ -192,15 +218,19 @@ export const PortalSidebar = ({
             )}
           </button>
 
-          {/* Properties submenu */}
+          {/* Properties submenu matching Figma white card */}
           {!collapsed && propertiesOpen && (
-            <div className="mt-1 ml-4 pl-3 border-l border-white/20 space-y-0.5">
+            <div className="mt-1.5 p-1.5 rounded-xl bg-white shadow-sm space-y-1 text-slate-700">
               <button
                 type="button"
                 onClick={() => router.push("/property")}
                 className={`${subItemBase} ${isMyProperties ? subActive : subIdle}`}
               >
-                <Home size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/my-properties.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="My Properties"
+                />
                 <span>My Properties</span>
               </button>
 
@@ -209,7 +239,11 @@ export const PortalSidebar = ({
                 onClick={() => router.push("/property/add-new")}
                 className={`${subItemBase} ${isMyPost ? subActive : subIdle}`}
               >
-                <PlusCircle size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/my-post.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="My Post"
+                />
                 <span>My Post</span>
               </button>
 
@@ -220,7 +254,11 @@ export const PortalSidebar = ({
                   pathname === "/projects" ? subActive : subIdle
                 }`}
               >
-                <FolderGit2 size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/my-projects.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="My Projects"
+                />
                 <span>My Projects</span>
               </button>
 
@@ -229,7 +267,11 @@ export const PortalSidebar = ({
                 onClick={() => router.push("/property/drafts")}
                 className={`${subItemBase} ${isDrafts ? subActive : subIdle}`}
               >
-                <FileText size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/drafts.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Drafts"
+                />
                 <span>Drafts</span>
               </button>
 
@@ -238,74 +280,131 @@ export const PortalSidebar = ({
                 onClick={() => router.push("/upgrade-plane")}
                 className={`${subItemBase} ${isBoost ? subActive : subIdle}`}
               >
-                <Rocket size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/boost-property.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Boost Property"
+                />
                 <span>Boost Property</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  router.push("/property/health-score/The%20terraces%20at%20max%20estate%20361")
+                }
+                className={`${subItemBase} ${isHealthScore ? subActive : subIdle}`}
+              >
+                <SidebarIcon
+                  src="/icon/sidebar/health-score.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Health Score"
+                />
+                <span>Health Score</span>
               </button>
             </div>
           )}
 
-          {/* Properties mini submenu (collapsed) */}
+          {/* Properties mini submenu (collapsed) matching Figma */}
           {collapsed && propertiesOpen && (
-            <div className="mt-1.5 p-1.5 rounded-xl bg-white/10 flex flex-col items-center gap-1 mx-auto w-12">
+            <div className="mt-1.5 p-1.5 rounded-xl bg-white shadow-sm flex flex-col items-center gap-1.5 mx-auto w-10 text-slate-600">
               <button
                 type="button"
                 onClick={() => router.push("/property")}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isMyProperties
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="My Properties"
               >
-                <Home size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/my-properties.svg"
+                  className="w-4 h-4"
+                  alt="My Properties"
+                />
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/property/add-new")}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isMyPost
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="My Post"
               >
-                <PlusCircle size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/my-post.svg"
+                  className="w-4 h-4"
+                  alt="My Post"
+                />
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/projects")}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   pathname === "/projects"
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="My Projects"
               >
-                <FolderGit2 size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/my-projects.svg"
+                  className="w-4 h-4"
+                  alt="My Projects"
+                />
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/property/drafts")}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isDrafts
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Drafts"
               >
-                <FileText size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/drafts.svg"
+                  className="w-4 h-4"
+                  alt="Drafts"
+                />
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/upgrade-plane")}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isBoost
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Boost Property"
               >
-                <Rocket size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/boost-property.svg"
+                  className="w-4 h-4"
+                  alt="Boost Property"
+                />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  router.push("/property/health-score/The%20terraces%20at%20max%20estate%20361")
+                }
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
+                  isHealthScore
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
+                }`}
+                title="Health Score"
+              >
+                <SidebarIcon
+                  src="/icon/sidebar/health-score.svg"
+                  className="w-4 h-4"
+                  alt="Health Score"
+                />
               </button>
             </div>
           )}
@@ -320,14 +419,20 @@ export const PortalSidebar = ({
               setPropertiesOpen(false);
             }}
             className={`${navItemBase} justify-between ${
-              crmOpen || isCrmList || isCrmDetail ? activeItem : idleItem
+              crmOpen
+                ? "bg-[#0A47BE] text-white font-bold shadow-inner"
+                : isCrmList || isCrmDetail
+                ? activeItem
+                : idleItem
             } ${collapsed ? "h-11 w-11 mx-auto px-0 justify-center" : "px-3.5 py-2.5"}`}
             title="CRM"
           >
             <div className="flex items-center gap-3">
-              <div className="px-1 py-0.5 border border-current rounded text-[8.5px] font-black leading-none tracking-tight shrink-0">
-                CRM
-              </div>
+              <SidebarIcon
+                src="/icon/sidebar/leads.svg"
+                className="w-[18px] h-[18px]"
+                alt="CRM Leads"
+              />
               {!collapsed && <span>CRM</span>}
             </div>
             {!collapsed && (
@@ -339,9 +444,9 @@ export const PortalSidebar = ({
             )}
           </button>
 
-          {/* CRM submenu */}
+          {/* CRM submenu matching Figma white card */}
           {!collapsed && crmOpen && (
-            <div className="mt-1 ml-4 pl-3 border-l border-white/20 space-y-0.5">
+            <div className="mt-1.5 p-1.5 rounded-xl bg-white shadow-sm space-y-1 text-slate-700">
               <button
                 type="button"
                 onClick={() => router.push("/crm?tab=all")}
@@ -349,7 +454,11 @@ export const PortalSidebar = ({
                   isCrmDetail || isCrmTab("all") ? subActive : subIdle
                 }`}
               >
-                <Users size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/leads.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Leads"
+                />
                 <span>Leads</span>
               </button>
 
@@ -360,7 +469,11 @@ export const PortalSidebar = ({
                   isCrmTab("contacted") ? subActive : subIdle
                 }`}
               >
-                <PhoneCall size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/follow-ups.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Follow-ups"
+                />
                 <span>Follow-ups</span>
               </button>
 
@@ -371,7 +484,11 @@ export const PortalSidebar = ({
                   isCrmTab("site-visit") ? subActive : subIdle
                 }`}
               >
-                <Building size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/site-visits.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Site Visits"
+                />
                 <span>Site Visits</span>
               </button>
 
@@ -382,7 +499,11 @@ export const PortalSidebar = ({
                   isCrmTab("negotiation") ? subActive : subIdle
                 }`}
               >
-                <Kanban size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/pipeline.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Pipeline"
+                />
                 <span>Pipeline</span>
               </button>
 
@@ -393,7 +514,11 @@ export const PortalSidebar = ({
                   isCrmTab("new") ? subActive : subIdle
                 }`}
               >
-                <CheckSquare size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/tasks.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Tasks"
+                />
                 <span>Tasks</span>
               </button>
 
@@ -404,7 +529,11 @@ export const PortalSidebar = ({
                   isCrmTab("converted") ? subActive : subIdle
                 }`}
               >
-                <History size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/lead-history.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Lead History"
+                />
                 <span>Lead History</span>
               </button>
 
@@ -415,112 +544,130 @@ export const PortalSidebar = ({
                   isCrmTab("not-respond") ? subActive : subIdle
                 }`}
               >
-                <Timer size={15} className="shrink-0" />
+                <SidebarIcon
+                  src="/icon/sidebar/response-time.svg"
+                  className="w-[15px] h-[15px]"
+                  alt="Response Time"
+                />
                 <span>Response Time</span>
               </button>
             </div>
           )}
 
-          {/* CRM mini submenu (collapsed) */}
+          {/* CRM mini submenu (collapsed) matching Figma */}
           {collapsed && crmOpen && (
-            <div className="mt-1.5 p-1.5 rounded-xl bg-white/10 flex flex-col items-center gap-1 mx-auto w-12">
+            <div className="mt-1.5 p-1.5 rounded-xl bg-white shadow-sm flex flex-col items-center gap-1.5 mx-auto w-10 text-slate-600">
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=all");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=all")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmDetail || isCrmTab("all")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Leads"
               >
-                <Users size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/leads.svg"
+                  className="w-4 h-4"
+                  alt="Leads"
+                />
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=contacted");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=contacted")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmTab("contacted")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Follow-ups"
               >
-                <PhoneCall size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/follow-ups.svg"
+                  className="w-4 h-4"
+                  alt="Follow-ups"
+                />
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=site-visit");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=site-visit")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmTab("site-visit")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Site Visits"
               >
-                <Building size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/site-visits.svg"
+                  className="w-4 h-4"
+                  alt="Site Visits"
+                />
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=negotiation");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=negotiation")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmTab("negotiation")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Pipeline"
               >
-                <Kanban size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/pipeline.svg"
+                  className="w-4 h-4"
+                  alt="Pipeline"
+                />
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=new");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=new")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmTab("new")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Tasks"
               >
-                <CheckSquare size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/tasks.svg"
+                  className="w-4 h-4"
+                  alt="Tasks"
+                />
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=converted");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=converted")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmTab("converted")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Lead History"
               >
-                <History size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/lead-history.svg"
+                  className="w-4 h-4"
+                  alt="Lead History"
+                />
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  router.push("/crm?tab=not-respond");
-                }}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer ${
+                onClick={() => router.push("/crm?tab=not-respond")}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
                   isCrmTab("not-respond")
-                    ? "bg-white text-[#1865F2]"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#EAF2FF] text-[#1865F2]"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
                 }`}
                 title="Response Time"
               >
-                <Timer size={15} />
+                <SidebarIcon
+                  src="/icon/sidebar/response-time.svg"
+                  className="w-4 h-4"
+                  alt="Response Time"
+                />
               </button>
             </div>
           )}
@@ -535,7 +682,11 @@ export const PortalSidebar = ({
           } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
           title="Audience"
         >
-          <User size={19} className="shrink-0" />
+          <SidebarIcon
+            src="/icon/sidebar/audience.svg"
+            className="w-[18px] h-[18px]"
+            alt="Audience"
+          />
           {!collapsed && <span>Audience</span>}
         </button>
 
@@ -548,7 +699,11 @@ export const PortalSidebar = ({
           } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
           title="Content"
         >
-          <Building size={19} className="shrink-0" />
+          <SidebarIcon
+            src="/icon/sidebar/content.svg"
+            className="w-[18px] h-[18px]"
+            alt="Content"
+          />
           {!collapsed && <span>Content</span>}
         </button>
 
@@ -561,7 +716,11 @@ export const PortalSidebar = ({
           } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
           title="Analytics"
         >
-          <BarChart3 size={19} className="shrink-0" />
+          <SidebarIcon
+            src="/icon/sidebar/analytics.svg"
+            className="w-[18px] h-[18px]"
+            alt="Analytics"
+          />
           {!collapsed && <span>Analytics</span>}
         </button>
 
@@ -574,7 +733,11 @@ export const PortalSidebar = ({
           } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
           title="Insights"
         >
-          <Megaphone size={19} className="shrink-0" />
+          <SidebarIcon
+            src="/icon/sidebar/insights.svg"
+            className="w-[18px] h-[18px]"
+            alt="Insights"
+          />
           {!collapsed && <span>Insights</span>}
         </button>
 
@@ -587,51 +750,69 @@ export const PortalSidebar = ({
           } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
           title="Account"
         >
-          <Settings size={19} className="shrink-0" />
+          <SidebarIcon
+            src="/icon/sidebar/account.svg"
+            className="w-[18px] h-[18px]"
+            alt="Account"
+          />
           {!collapsed && <span>Account</span>}
         </button>
       </div>
 
       {/* Bottom Area */}
       <div className="p-3 border-t border-white/15 space-y-2 shrink-0">
-        {/* Upgrade Card */}
+        {/* Upgrade Card matching Figma */}
         {!collapsed && (
-          <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-white p-3 shadow-md flex items-center gap-2.5 text-[#0B132B]">
-            <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
-              <Rocket size={16} />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[11.5px] font-bold text-slate-900 block leading-tight">
-                Want to upgrade?
-              </span>
-              <button
-                type="button"
-                onClick={() => router.push("/upgrade-plane")}
-                className="mt-1 px-3 py-1 rounded-full bg-[#0B132B] hover:bg-black text-white font-bold text-[9.5px] shadow-2xs transition-colors cursor-pointer"
-              >
-                Upgrade now
-              </button>
+          <div
+            onClick={() => router.push("/upgrade-plane")}
+            className="relative w-full cursor-pointer group select-none transition-transform hover:scale-[1.02]"
+          >
+            <div className="relative w-full aspect-[804/341]">
+              <Image
+                src="/icon/sidebar/Group 1686560404.png"
+                alt="Want to upgrade"
+                fill
+                sizes="220px"
+                className="object-contain"
+                priority
+              />
+              <div className="absolute inset-x-0 bottom-2.5 flex justify-center pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push("/upgrade-plane");
+                  }}
+                  className="px-4 py-0.5 rounded-full bg-black hover:bg-slate-900 text-white font-bold text-[9.5px] tracking-tight shadow-sm cursor-pointer transition-colors"
+                >
+                  Upgrade now
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Logout Button */}
+        {/* Logout Button matching Figma */}
         <button
           type="button"
           onClick={handleLogout}
-          className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-white/90 bg-white/10 hover:bg-white/20 border border-white/15 transition-colors cursor-pointer ${
-            collapsed ? "justify-center px-0" : ""
+          className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold text-white bg-[#4285F4] hover:bg-[#3378EA] transition-colors cursor-pointer shadow-xs ${
+            collapsed ? "justify-center px-0 h-10 w-10 mx-auto" : ""
           }`}
           title="Logout"
         >
-          <LogOut size={16} />
+          <SidebarIcon
+            src="/icon/sidebar/logout.svg"
+            className="w-4 h-4"
+            alt="Logout"
+          />
           {!collapsed && <span>Logout</span>}
         </button>
 
         {/* Profile */}
         <div
           onClick={() => router.push("/account")}
-          className={`flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer ${
+          className={`flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer ${
             collapsed ? "justify-center px-0" : ""
           }`}
           title={userName}
@@ -650,11 +831,8 @@ export const PortalSidebar = ({
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <span className="block text-[12.5px] font-bold text-white tracking-tight truncate">
-                {userName}
-              </span>
-              <span className="block text-[10px] text-white/60 font-medium">
-                Seller
+              <span className="block text-[13px] font-bold text-white tracking-tight">
+                Profile
               </span>
             </div>
           )}

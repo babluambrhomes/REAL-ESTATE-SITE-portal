@@ -108,13 +108,19 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
           />
           <button
             type="submit"
-            className="w-8 h-8 rounded-full bg-[#1865F2] hover:bg-blue-700 text-white flex items-center justify-center shrink-0 transition-colors shadow-xs cursor-pointer"
+            className="w-8 h-8 rounded-full bg-[#1865F2] hover:bg-blue-700 text-white flex items-center justify-center shrink-0 transition-colors shadow-xs cursor-pointer p-1.5"
           >
-            <Search size={14} />
+            <Image
+              src="/icon/dashboard/search-glass.svg"
+              alt="Search"
+              width={14}
+              height={14}
+              className="object-contain"
+            />
           </button>
         </form>
 
-        {/* Message / Chat Icon with red notification dot */}
+        {/* Message / Chat Icon */}
         <div className="relative">
           <button
             type="button"
@@ -122,16 +128,21 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
               setShowMessages(!showMessages);
               setShowNotifications(false);
             }}
-            className="w-9 h-9 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-[#1865F2] flex items-center justify-center transition-colors shadow-2xs relative cursor-pointer"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-[#1865F2] flex items-center justify-center transition-colors shadow-2xs relative cursor-pointer overflow-hidden p-1.5"
             title="Messages"
           >
-            <MessageSquare size={16} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
+            <Image
+              src="/icon/dashboard/chat-bubble.svg"
+              alt="Messages"
+              width={20}
+              height={20}
+              className="object-contain"
+            />
           </button>
 
           {/* Messages Dropdown */}
           {showMessages && (
-            <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute right-0 top-full mt-2 w-72 rounded-xl border border-slate-200 bg-white p-3 shadow-xl z-50 animate-in fade-in zoom-in-95">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <span className="text-xs font-bold text-[#0B132B]">Buyer Messages</span>
                 <span className="text-[10px] text-[#1865F2] font-semibold">2 New</span>
@@ -176,16 +187,22 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
               setShowNotifications(!showNotifications);
               setShowMessages(false);
             }}
-            className="w-9 h-9 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-[#1865F2] flex items-center justify-center transition-colors shadow-2xs relative cursor-pointer"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-[#1865F2] flex items-center justify-center transition-colors shadow-2xs relative cursor-pointer overflow-hidden p-1.5"
             title="Notifications"
           >
-            <Bell size={16} />
+            <Image
+              src="/icon/dashboard/bell-badge.svg"
+              alt="Notifications"
+              width={20}
+              height={20}
+              className="object-contain"
+            />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#1865F2] rounded-full" />
           </button>
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xl z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-slate-200 bg-white p-3.5 shadow-xl z-50 animate-in fade-in zoom-in-95">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <span className="text-xs font-bold text-[#0B132B]">Recent Alerts</span>
                 <button
@@ -222,7 +239,7 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
         </div>
 
         {/* Profile Completion Card (Figma Exact 1:1) */}
-        <div className="hidden lg:flex flex-col justify-center bg-white border border-slate-200 rounded-2xl px-3.5 py-2 shadow-2xs min-w-[210px]">
+        <div className="hidden lg:flex flex-col justify-center bg-white border border-slate-200 rounded-xl px-3.5 py-2 shadow-2xs min-w-[210px]">
           <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 mb-1">
             <span>Profile Completion</span>
             <span className="text-[#0B132B]">78%</span>
