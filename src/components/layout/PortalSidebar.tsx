@@ -165,6 +165,7 @@ export const PortalSidebar = ({
 
       {/* Navigation Menu List */}
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-1 no-scrollbar">
+        
         {/* 1. Dashboard */}
         <div className="relative">
           <button

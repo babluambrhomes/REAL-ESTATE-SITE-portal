@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 import toast from "react-hot-toast";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
 interface PortalHeaderProps {
   onSearch?: (query: string) => void;
@@ -85,19 +86,18 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
       {/* Left: Greeting & Subtitle */}
       <div>
         <h1 className="text-[24px] sm:text-[26px] font-bold text-[#0B132B] tracking-tight">
-          Hello, {userName}
+          Hi, {userName}
         </h1>
-        <p className="text-[13px] text-slate-500 font-normal mt-0.5">
-          Explore information and activity about your property
-        </p>
+        
       </div>
 
       {/* Right: Search, Chat, Notifications & Profile Completion */}
-      <div className="flex flex-wrap items-center gap-3 sm:gap-3.5 relative">
+      <div className="flex  items-center gap-3 sm:gap-3.5 relative">
+        <WorkspaceSwitcher />
         {/* Search Bar Input */}
         <form
           onSubmit={handleSearchSubmit}
-          className="relative flex items-center bg-white border border-slate-200 rounded-full pl-4 pr-1 py-1 shadow-2xs focus-within:border-[#1865F2] transition-colors w-full sm:w-[260px] lg:w-[300px]"
+          className="relative flex items-center bg-white border border-slate-200 rounded-full pl-4 pr-1 py-1 shadow-2xs focus-within:border-[#1865F2] transition-colors w-full sm:w-[260px] lg:w-[200px]"
         >
           <input
             type="text"
@@ -165,7 +165,7 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
                   </div>
                 ))}
               </div>
-              <button
+              {/* <button
                 type="button"
                 onClick={() => {
                   setShowMessages(false);
@@ -174,7 +174,7 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
                 className="w-full mt-2 py-1.5 text-center text-xs font-bold text-[#1865F2] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
               >
                 Go to CRM Leads →
-              </button>
+              </button> */}
             </div>
           )}
         </div>

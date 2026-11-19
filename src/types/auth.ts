@@ -1,3 +1,5 @@
+import type { Workspace } from "./workspace";
+
 export interface RegisterRequest {
   email?: string;
   phone?: string;
@@ -98,11 +100,20 @@ export interface AuthData {
   user: User;
   accessToken: string;
   refreshToken: string;
+  workspaces: Workspace[];
+  activeWorkspaceId: string | null;
 }
 
 export interface AuthSuccessResponse {
   statusCode: number;
   data:AuthData;
+  message: string;
+  success: true;
+}
+
+export interface WorkspacesResponse {
+  statusCode: number;
+  data: Pick<AuthData, "workspaces" | "activeWorkspaceId">;
   message: string;
   success: true;
 }

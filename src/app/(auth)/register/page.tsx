@@ -112,7 +112,7 @@ export default function RegisterForm() {
       <VerifyOtpForm
         identifier={otpIdentifier}
         purpose={otpPurpose}
-        apiUrl="/private-otp-verify"
+        apiUrl="/auth/private-otp-verify"
         imgUrl="/auth/otp.png"
         onSuccess={() => {
           dispatch(clearOtpState());
@@ -202,7 +202,7 @@ export default function RegisterForm() {
       <VerifyOtpForm
         identifier={otpIdentifier}
         purpose={otpPurpose}
-        apiUrl="/private-otp-verify"
+        apiUrl="/auth/private-otp-verify"
         imgUrl="/auth/otp.png"
         onSuccess={() => {
           dispatch(clearOtpState());

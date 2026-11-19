@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { verifyOtpSchema, type VerifyOtpForm as VerifyOtpFormType } from "@/lib/features/auth/schemas";
 import type { VerifyOtpRequest, VerifyOtpFormProps } from "@/types";
-import { axiosInstance } from "@/lib/axios";
+import { apiClient } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { setAuth } from "@/store/slice/authSlice";
@@ -83,7 +83,7 @@ export function VerifyOtpForm({
   setIsPending(true);
 
   try {
-    const response = await axiosInstance.post(apiUrl, {
+    const response = await apiClient.post(apiUrl, {
       identifier,
       code: data.code,
       purpose: purpose as VerifyOtpRequest["purpose"],

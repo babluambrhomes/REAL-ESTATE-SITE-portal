@@ -1,123 +1,86 @@
-import axios from "axios";
-import type { AppDispatch, RootState } from "@/store/store";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
+import { store } from "@/store/store";
+import type { ApiError } from "@/types";
 
-const BASE_URL = "/api/v1/auth";
-const API_V1_URL = "/api/v1";
+type RetryConfig = AxiosRequestConfig & { _retry?: boolean };
 
-export const axiosInstance = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
 
 export const apiClient = axios.create({
-  baseURL: API_V1_URL,
+  baseURL: API_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-type StoreRef = { getState: () => RootState; dispatch: AppDispatch };
-
-let storeRef: StoreRef | null = null;
-
-export function injectStore(store: StoreRef) {
-  storeRef = store;
-}
-
-let failedQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (error: unknown) => void;
-}> = [];
-
-let isRefreshing = false;
-
-function processQueue(error: unknown, token: string | null = null) {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token!);
-    }
-  });
-  failedQueue = [];
-}
-
-const attachAuthHeader = (config: any) => {
-  const state = storeRef?.getState();
-  const token =
-    state?.auth?.accessToken || state?.auth?.verificationToken;
+apiClient.interceptors.request.use((config) => {
+  const state = store.getState();
+  const { accessToken, verificationToken } = state.auth;
+  const token = accessToken || verificationToken;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  return config;
-};
 
-axiosInstance.interceptors.request.use(attachAuthHeader, (error) => Promise.reject(error));
-apiClient.interceptors.request.use(attachAuthHeader, (error) => Promise.reject(error));
-
-const handleResponseError = async (error: any) => {
-  const originalRequest = error.config;
-
+  delete config.headers["x-organization-id"];
+  const { workspaces, activeId } = state.workspace;
+  const activeWorkspace = workspaces.find((workspace) => workspace.id === activeId);
   if (
-    error.response?.status === 401 &&
-    error.response?.data?.code === "TOKEN_EXPIRED" &&
-    !originalRequest._retry
+    token &&
+    activeWorkspace?.type === "ORGANIZATION" &&
+    activeWorkspace.organizationId
   ) {
-    if (isRefreshing) {
-      return new Promise((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
-      })
-        .then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return axios(originalRequest);
-        })
-        .catch((err) => Promise.reject(err));
-    }
+    config.headers["x-organization-id"] = activeWorkspace.organizationId;
+  }
+  return config;
+});
 
-    originalRequest._retry = true;
-    isRefreshing = true;
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError<ApiError>) => {
+    const original = error.config as RetryConfig | undefined;
 
-    try {
-      const state = storeRef?.getState();
-      const refreshToken = state?.auth?.refreshToken;
+    if (
+      error?.response?.status === 401 &&
+      error?.response?.data?.code === "TOKEN_EXPIRED" &&
+      original &&
+      !original._retry
+    ) {
+      original._retry = true;
+      const { refreshToken } = store.getState().auth;
 
-      if (!refreshToken) {
-        throw new Error("No refresh token available");
+      if (refreshToken) {
+        try {
+          const { data } = await axios.post(`${API_URL}/auth/refresh`, {
+            refreshToken,
+          });
+          const { accessToken, refreshToken: newRefreshToken } = data.data;
+
+          store.dispatch({
+            type: "auth/tokensRefreshed",
+            payload: { accessToken, refreshToken: newRefreshToken },
+          });
+
+          original.headers = {
+            ...(original.headers ?? {}),
+            Authorization: `Bearer ${accessToken}`,
+          };
+          return apiClient.request(original);
+        } catch (refreshError) {
+          store.dispatch({ type: "auth/logout" });
+          if (typeof window !== "undefined") {
+            window.location.href = "/login";
+          }
+          return Promise.reject(refreshError);
+        }
       }
 
-      const { data } = await axios.post(`${BASE_URL}/refresh`, {
-        refreshToken,
-      });
-
-      const { accessToken, refreshToken: newRefreshToken } = data.data;
-
-      storeRef?.dispatch({
-        type: "auth/tokensRefreshed",
-        payload: { accessToken, refreshToken: newRefreshToken },
-      });
-
-      processQueue(null, accessToken);
-
-      originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-      return axios(originalRequest);
-    } catch (refreshError) {
-      processQueue(refreshError, null);
-      storeRef?.dispatch({ type: "auth/logout" });
+      store.dispatch({ type: "auth/logout" });
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
-      return Promise.reject(refreshError);
-    } finally {
-      isRefreshing = false;
     }
+
+    return Promise.reject(error);
   }
-
-  return Promise.reject(error);
-};
-
-axiosInstance.interceptors.response.use((response) => response, handleResponseError);
-apiClient.interceptors.response.use((response) => response, handleResponseError);
+);

@@ -1,9 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { authApi } from "./authApi";
-import { setAuth, setRequiresOtp, setOtpState, setVerificationToken, clearAuth } from "@/store/slice/authSlice";
+import { setAuth, setRequiresOtp, setOtpState, setVerificationToken } from "@/store/slice/authSlice";
+import { hydrateWorkspaces } from "@/store/slice/workspaceSlice";
 import { useAppDispatch } from "@/store/hooks";
-import type { AuthSuccessResponse, OtpSentResponse, ApiError } from "@/types";
+import type { AppDispatch } from "@/store/store";
+import type { AuthData, AuthSuccessResponse, OtpSentResponse, ApiError } from "@/types";
 import type {
   RegisterRequest,
   LoginRequest,
@@ -24,6 +26,16 @@ function isOtpSentResponse(
   return (
     response.message?.toLowerCase().includes("otp") ||
     response.message?.toLowerCase().includes("verify")
+  );
+}
+
+function applyAuth(dispatch: AppDispatch, data: AuthData) {
+  dispatch(setAuth(data));
+  dispatch(
+    hydrateWorkspaces({
+      workspaces: data.workspaces,
+      activeWorkspaceId: data.activeWorkspaceId,
+    })
   );
 }
 
@@ -49,7 +61,7 @@ export function useLoginMutation() {
 
         dispatch(setRequiresOtp(true));
       } else if (result.data) {
-        dispatch(setAuth(result.data));
+        applyAuth(dispatch, result.data);
       }
     },
     onError: (error) => {
@@ -77,14 +89,14 @@ export function useRegisterMutation() {
 
         // Keep tokens received from backend
         if (result.data) {
-          dispatch(setAuth(result.data));
+          applyAuth(dispatch, result.data);
         }
 
         // Then show OTP screen
         dispatch(setOtpState({ identifier, purpose }));
         dispatch(setRequiresOtp(true));
       } else if (result.data) {
-        dispatch(setAuth(result.data));
+        applyAuth(dispatch, result.data);
       }
     },
     onError: (error) => {
@@ -100,7 +112,7 @@ export function useVerifyOtpMutation() {
     mutationFn: (data: VerifyOtpRequest) => authApi.verifyOtp(data),
     onSuccess: (result) => {
       if (result.data) {
-        dispatch(setAuth(result.data));
+        applyAuth(dispatch, result.data);
       }
     },
     onError: (error) => {

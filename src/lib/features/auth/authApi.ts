@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/lib/axios";
+import { apiClient } from "@/lib/axios";
 
 import type {
   RegisterRequest,
@@ -13,54 +13,60 @@ import type {
   OtpSentResponse,
   MessageResponse,
   RefreshResponse,
+  WorkspacesResponse,
 } from "@/types";
 
 export const authApi = {
+  getWorkspaces: () =>
+    apiClient
+      .get<WorkspacesResponse>("/api/v1/auth/workspaces")
+      .then((r) => r.data),
+
   register: (data: RegisterRequest) =>
-    axiosInstance
-      .post<AuthSuccessResponse>("/register", data)
+    apiClient
+      .post<AuthSuccessResponse>("/auth/register", data)
       .then((r) => r.data),
 
   login: (data: LoginRequest) =>
-    axiosInstance
-      .post<AuthSuccessResponse | OtpSentResponse>("/login", data)
+    apiClient
+      .post<AuthSuccessResponse | OtpSentResponse>("/auth/login", data)
       .then((r) => r.data),
 
   verifyOtp: (data: VerifyOtpRequest) =>
-    axiosInstance
+    apiClient
       .post<AuthSuccessResponse | MessageResponse>(
-        "/private-otp-verify",
+        "/auth/private-otp-verify",
         data
       )
       .then((r) => r.data),
 
   refresh: (data: RefreshRequest) =>
-    axiosInstance
-      .post<RefreshResponse>("/refresh", data)
+    apiClient
+      .post<RefreshResponse>("/auth/refresh", data)
       .then((r) => r.data),
 
   forgotPassword: (data: ForgotPasswordRequest) =>
-    axiosInstance
-      .post<MessageResponse>("/forgot-password", data)
+    apiClient
+      .post<MessageResponse>("/auth/forgot-password", data)
       .then((r) => r.data),
 
   resetPassword: (data: ResetPasswordRequest) =>
-    axiosInstance
-      .post<MessageResponse>("/reset-password", data)
+    apiClient
+      .post<MessageResponse>("/auth/reset-password", data)
       .then((r) => r.data),
 
   updateContact: (data: UpdateContactRequest) =>
-    axiosInstance
-      .patch<MessageResponse>("/me/contact", data)
+    apiClient
+      .patch<MessageResponse>("/auth/me/contact", data)
       .then((r) => r.data),
 
   updatePassword: (data: UpdatePasswordRequest) =>
-    axiosInstance
-      .patch<MessageResponse>("/me/password", data)
+    apiClient
+      .patch<MessageResponse>("/auth/me/password", data)
       .then((r) => r.data),
 
   logout: () =>
-    axiosInstance
-      .post<MessageResponse>("/logout")
+    apiClient
+      .post<MessageResponse>("/auth/logout")
       .then((r) => r.data),
 };

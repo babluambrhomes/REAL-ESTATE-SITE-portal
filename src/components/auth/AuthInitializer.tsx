@@ -3,7 +3,9 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateUser, logout } from "@/store/slice/authSlice";
+import { hydrateWorkspaces } from "@/store/slice/workspaceSlice";
 import { userApi } from "@/lib/features/user/userApi";
+import { authApi } from "@/lib/features/auth/authApi";
 
 export const AuthInitializer = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +30,15 @@ export const AuthInitializer = () => {
           dispatch(logout());
         }
       });
+
+    authApi
+      .getWorkspaces()
+      .then((res) => {
+        if (isMounted && res.data) {
+          dispatch(hydrateWorkspaces({ ...res.data, preserveActive: true }));
+        }
+      })
+      .catch(() => {});
 
     return () => {
       isMounted = false;

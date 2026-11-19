@@ -1,9 +1,5 @@
 import type { NextConfig } from "next";
 
-const rawBackendUrl =
-  process.env.BACKEND_URL || "https://roofin-backend.ambrhomes.work.gd";
-const backendUrl = rawBackendUrl.replace(/\/+$/, "");
-
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -35,19 +31,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "firebasestorage.googleapis.com",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5000",
+      },
     ],
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/api/v1/:path*",
-        destination: `${backendUrl}/api/v1/:path*`,
-      },
-      {
-        source: "/uploads/:path*",
-        destination: `${backendUrl}/uploads/:path*`,
-      },
-    ];
   },
 };
 
