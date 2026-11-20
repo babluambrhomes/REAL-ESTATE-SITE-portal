@@ -137,8 +137,8 @@ export const PortalPostProperty = ({
   const { user } = useAppSelector((state) => state.auth);
   const listedUserName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
-    user?.email?.split("@")[0] ||
-    "Rohit Sharma";
+    user?.email ||
+    "";
 
   const [currentStep, setCurrentStep] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);

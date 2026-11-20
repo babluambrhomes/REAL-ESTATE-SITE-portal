@@ -71,7 +71,8 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
 
   const userName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
-    "Jitender Singh";
+    user?.email ||
+    ""; 
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +86,7 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
     <header className="w-full bg-transparent flex flex-col md:flex-row md:items-center justify-between gap-4 font-jakarta relative z-30">
       {/* Left: Greeting & Subtitle */}
       <div>
-        <h1 className="text-[24px] sm:text-[26px] font-bold text-[#0B132B] tracking-tight">
+        <h1 className="text-[24px]  font-bold text-[#0B132B] tracking-tight">
           Hi, {userName}
         </h1>
         

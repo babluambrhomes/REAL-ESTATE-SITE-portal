@@ -19,9 +19,10 @@ export const AuthInitializer = () => {
 
     userApi
       .getProfile()
-      .then((res) => {
-        if (isMounted && res.data) {
-          dispatch(updateUser(res.data));
+      .then((res: any) => {
+        const profile = res?.data?.user ?? res?.data;
+        if (isMounted && profile) {
+          dispatch(updateUser(profile));
         }
       })
       .catch((err) => {

@@ -43,17 +43,22 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { updateUser } from "@/store/slice/authSlice";
 import { userApi } from "@/lib/features/user/userApi";
 import { sellerApi } from "@/lib/features/seller/sellerApi";
 
 export default function AccountSettings() {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const userFullName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
-    "Jitender singh";
+    user?.email ||
+    "";
+  const userEmail = user?.email || "";
+  const userPhone = user?.phone || "";
 
-  // Tab State: defaults to "public-profile" to immediately display the requested Figma screen
+
   const [activeTab, setActiveTab] = useState<
     | "my-profile"
     | "personal-info"
@@ -98,18 +103,24 @@ export default function AccountSettings() {
   const [notifMarketing, setNotifMarketing] = useState(false);
   const [notifPromos, setNotifPromos] = useState(false);
 
-  // Form Fields (Figma 1:1 defaults)
+  // Form Fields (prefilled from Redux after login)
   const [fullName, setFullName] = useState(userFullName);
-  const [mobileNumber, setMobileNumber] = useState("+91 9867867896");
-  const [emailAddress, setEmailAddress] = useState(
-    user?.email || "Jitender.singh@gmail.com"
-  );
+  const [mobileNumber, setMobileNumber] = useState(userPhone);
+  const [emailAddress, setEmailAddress] = useState(userEmail);
   const [altContact, setAltContact] = useState("+91 9867867896");
   const [addressLine1, setAddressLine1] = useState("Sectore 76, Noida");
   const [addressLine2, setAddressLine2] = useState("Sectore 76, Noida");
   const [city, setCity] = useState("Noida");
   const [stateName, setStateName] = useState("Uttar Pradesh");
   const [pincode, setPincode] = useState("201301");
+
+  useEffect(() => {
+    if (!user) return;
+    if (!fullName && userFullName) setFullName(userFullName);
+    if (!emailAddress && userEmail) setEmailAddress(userEmail);
+    if (!mobileNumber && userPhone) setMobileNumber(userPhone);
+  }, [user, userFullName, userEmail, userPhone, fullName, emailAddress, mobileNumber]);
+
   const [aboutBusiness, setAboutBusiness] = useState(
     "We help home buyers and investors find the right property in noida and greater nois . focus on honest advice, transparent deals, and a seamless buying experience."
   );
@@ -161,15 +172,8 @@ export default function AccountSettings() {
     userApi
       .getProfile()
       .then((res: any) => {
-        if (res?.data) {
-          const u = res.data;
-          const uName = [u.person?.firstName, u.person?.lastName]
-            .filter(Boolean)
-            .join(" ");
-          if (uName) setFullName(uName);
-          if (u.person?.phone) setMobileNumber(u.person.phone);
-          if (u.email) setEmailAddress(u.email);
-        }
+        const profile = res?.data?.user ?? res?.data;
+        if (profile) dispatch(updateUser(profile));
       })
       .catch(() => {});
 
@@ -178,11 +182,8 @@ export default function AccountSettings() {
       .then((res: any) => {
         if (res?.data) {
           const s = res.data;
-          if (s.name) setFullName(s.name);
           if (s.reraNumber) setReraNo(s.reraNumber);
           if (s.organization?.name) setAgency(s.organization.name);
-          if (s.contactPhone) setMobileNumber(s.contactPhone);
-          if (s.contactEmail) setEmailAddress(s.contactEmail);
         }
       })
       .catch(() => {});
@@ -206,6 +207,7 @@ export default function AccountSettings() {
     } catch {
       // Local fallback
     }
+    dispatch(updateUser({ person: { ...(user?.person ?? {}), firstName, lastName } }));
     toast.success("Personal information saved successfully!");
     if (nextTab) {
       setActiveTab(nextTab);

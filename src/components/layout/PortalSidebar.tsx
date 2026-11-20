@@ -78,8 +78,8 @@ export const PortalSidebar = ({
 
   const userName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
-    user?.email?.split("@")[0] ||
-    "Jitender Singh";
+    user?.email ||
+    "";
 
   const handleLogout = () => {
     dispatch(clearAuth());
