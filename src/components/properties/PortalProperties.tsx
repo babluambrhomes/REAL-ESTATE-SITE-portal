@@ -36,6 +36,7 @@ import { PreviewAsSellerModal } from "@/components/shared/PortalModals";
 import { propertyApi } from "@/lib/features/property/propertyApi";
 import { crmApi } from "@/lib/features/crm/crmApi";
 import { formatPriceInr } from "@/lib/features/property/propertyAdapter";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 interface PortalPropertiesProps {
   onPostProperty: () => void;
@@ -267,6 +268,7 @@ export const PortalProperties = ({
   initialNavTab,
   onSelectLead,
 }: PortalPropertiesProps) => {
+  const { can } = usePermissions();
   const [activeNavTab, setActiveNavTab] = useState(initialNavTab || "my-properties");
   const [activeFilterTab, setActiveFilterTab] = useState("All");
   const [searchVal, setSearchVal] = useState("");
@@ -290,6 +292,8 @@ export const PortalProperties = ({
   const [leadStatusFilter, setLeadStatusFilter] = useState("All");
 
   const [siteVisitsList, setSiteVisitsList] = useState(SITE_VISITS_DATA);
+
+
 
   // Sync initialNavTab if prop changes
   useEffect(() => {
@@ -375,6 +379,10 @@ export const PortalProperties = ({
   };
 
   const handleEditProperty = (prop: any) => {
+    if (!can("property.update")) {
+      toast.error("You do not have permission to edit properties.");
+      return;
+    }
     try {
       const draft = {
         societyName: prop.subtitle,
@@ -389,6 +397,10 @@ export const PortalProperties = ({
   };
 
   const handleDeleteProperty = (id: string) => {
+    if (!can("property.delete")) {
+      toast.error("You do not have permission to delete properties.");
+      return;
+    }
     const updated = propertiesList.filter((p) => p.id !== id);
     setPropertiesList(updated);
     try {
@@ -410,6 +422,10 @@ export const PortalProperties = ({
   };
 
   const handleToggleSoldOrRented = (id: string, currentStatus: string) => {
+    if (!can("property.update")) {
+      toast.error("You do not have permission to update properties.");
+      return;
+    }
     const isCurrentlySold = currentStatus === "Sold" || currentStatus === "Rented";
     const newStatus = isCurrentlySold ? "On Going" : "Sold";
     const updated = propertiesList.map((p) =>
@@ -432,6 +448,10 @@ export const PortalProperties = ({
 
   const handleAddProject = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!can("property.create")) {
+      toast.error("You do not have permission to create projects.");
+      return;
+    }
     if (!newProjectName.trim()) {
       toast.error("Please enter project name");
       return;
@@ -459,6 +479,10 @@ export const PortalProperties = ({
   };
 
   const handleConfirmSiteVisit = (id: string) => {
+    if (!can("siteVisit.update")) {
+      toast.error("You do not have permission to update site visits.");
+      return;
+    }
     setSiteVisitsList((prev) =>
       prev.map((sv) => (sv.id === id ? { ...sv, status: "Confirmed" } : sv))
     );
@@ -503,6 +527,13 @@ export const PortalProperties = ({
         {NAV_TABS.map((tab) => {
           const isActive = activeNavTab === tab.id;
           const IconComponent = tab.icon;
+          const tabAllowed =
+            tab.id === "leads"
+              ? can("lead.read")
+              : tab.id === "site-visits"
+              ? can("siteVisit.read")
+              : true;
+          if (!tabAllowed) return null;
           return (
             <button
               key={tab.id}
@@ -548,7 +579,9 @@ export const PortalProperties = ({
             <button
               type="button"
               onClick={onPostProperty}
-              className="px-6 py-2.5 rounded-xl bg-[#1865F2] hover:bg-blue-700 text-white font-semibold text-[13px] shadow-sm transition-all cursor-pointer active:scale-98"
+              className={`px-6 py-2.5 rounded-xl bg-[#1865F2] hover:bg-blue-700 text-white font-semibold text-[13px] shadow-sm transition-all cursor-pointer active:scale-98 ${
+                can("property.create") ? "" : "hidden"
+              }`}
             >
               Post Property
             </button>
@@ -785,7 +818,9 @@ export const PortalProperties = ({
                       <button
                         type="button"
                         onClick={() => handleEditProperty(p)}
-                        className="px-4 py-1.5 rounded-lg border border-blue-100 bg-[#F0F5FF] hover:bg-blue-100 text-[#1865F2] text-[12px] font-semibold transition-colors cursor-pointer"
+                        className={`px-4 py-1.5 rounded-lg border border-blue-100 bg-[#F0F5FF] hover:bg-blue-100 text-[#1865F2] text-[12px] font-semibold transition-colors cursor-pointer ${
+                          can("property.update") ? "" : "hidden"
+                        }`}
                       >
                         Edit
                       </button>
@@ -852,7 +887,9 @@ export const PortalProperties = ({
                               <button
                                 type="button"
                                 onClick={() => handleDeleteProperty(p.id)}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-semibold transition-colors cursor-pointer text-left"
+                                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-semibold transition-colors cursor-pointer text-left ${
+                                  can("property.delete") ? "" : "hidden"
+                                }`}
                               >
                                 <Trash2 size={14} className="text-rose-500" />
                                 <span>Delete Listing</span>
@@ -1306,7 +1343,9 @@ export const PortalProperties = ({
             <button
               type="button"
               onClick={() => toast.success("Select a buyer from your CRM to schedule a new site visit")}
-              className="px-4 py-2 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-semibold text-xs cursor-pointer shadow-sm"
+              className={`px-4 py-2 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-semibold text-xs cursor-pointer shadow-sm ${
+                can("siteVisit.update") ? "" : "hidden"
+              }`}
             >
               + Schedule Visit
             </button>
@@ -1349,7 +1388,9 @@ export const PortalProperties = ({
                     <button
                       type="button"
                       onClick={() => handleConfirmSiteVisit(sv.id)}
-                      className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold cursor-pointer transition-colors"
+                      className={`px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold cursor-pointer transition-colors ${
+                        can("siteVisit.update") ? "" : "hidden"
+                      }`}
                     >
                       Confirm Visit
                     </button>

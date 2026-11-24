@@ -19,7 +19,7 @@ import type {
 export const authApi = {
   getWorkspaces: () =>
     apiClient
-      .get<WorkspacesResponse>("/api/v1/auth/workspaces")
+      .get<WorkspacesResponse>("/auth/workspaces")
       .then((r) => r.data),
 
   register: (data: RegisterRequest) =>

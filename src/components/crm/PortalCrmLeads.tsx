@@ -27,6 +27,7 @@ import {
   BulkAssignLeadsModal,
 } from "@/components/shared/PortalModals";
 import { crmApi } from "@/lib/features/crm/crmApi";
+import { usePermissions } from "@/lib/auth/usePermissions";
 import toast from "react-hot-toast";
 
 interface PortalCrmLeadsProps {
@@ -151,6 +152,7 @@ export const PortalCrmLeads = ({
   initialTab,
   onTabChange,
 }: PortalCrmLeadsProps) => {
+  const { can } = usePermissions();
   const [activeTab, setActiveTab] = useState(initialTab || "All Leads");
   const [leads, setLeads] = useState(LEADS_DATA);
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -282,6 +284,10 @@ export const PortalCrmLeads = ({
   const [activeLead, setActiveLead] = useState<any>(null);
 
   const handleUpdateStatus = async (leadId: string, newStatus: string) => {
+    if (!can("lead.update")) {
+      toast.error("You do not have permission to update leads.");
+      return;
+    }
     const statusApiMap: Record<string, string> = {
       New: "NEW",
       Contacted: "IN_PROGRESS",
@@ -304,6 +310,10 @@ export const PortalCrmLeads = ({
   };
 
   const handleSavePriority = async (newPriority: string) => {
+    if (!can("lead.update")) {
+      toast.error("You do not have permission to update leads.");
+      return;
+    }
     setPriorityModalOpen(false);
     if (!activeLead) return;
     setLeads((prev) =>
@@ -318,6 +328,10 @@ export const PortalCrmLeads = ({
   };
 
   const handleSaveNote = async (note: any) => {
+    if (!can("lead.update")) {
+      toast.error("You do not have permission to update leads.");
+      return;
+    }
     setNoteModalOpen(false);
     const noteText =
       typeof note === "string" ? note : `${note?.type || "Note"}: ${note?.details || ""}`;
@@ -334,6 +348,10 @@ export const PortalCrmLeads = ({
   };
 
   const handleSaveSiteVisit = async () => {
+    if (!can("siteVisit.update") || !can("lead.update")) {
+      toast.error("You do not have permission to schedule site visits.");
+      return;
+    }
     setSiteVisitModalOpen(false);
     if (activeLead) {
       await handleUpdateStatus(activeLead.id, "Site Visit");
@@ -420,7 +438,9 @@ export const PortalCrmLeads = ({
               input.onchange = () => toast.success("Leads file selected for import!");
               input.click();
             }}
-            className="px-4 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+            className={`px-4 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors ${
+              can("lead.update") ? "" : "hidden"
+            }`}
           >
             <Upload size={14} className="text-slate-500" />
             <span>Import Leads</span>
@@ -456,7 +476,9 @@ export const PortalCrmLeads = ({
               setActiveLead(leads[0]);
               setNoteModalOpen(true);
             }}
-            className="px-4 py-2 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            className={`px-4 py-2 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer ${
+              can("lead.update") ? "" : "hidden"
+            }`}
           >
             <Plus size={14} />
             <span>Add Notes</span>
@@ -941,7 +963,9 @@ export const PortalCrmLeads = ({
                                 setActiveLead(row);
                                 setSiteVisitModalOpen(true);
                               }}
-                              className="w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                              className={`w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                                can("lead.update") ? "" : "hidden"
+                              }`}
                             >
                               <RotateCw size={14} className="text-slate-500" />
                               <span>Schedule Follow-up</span>
@@ -955,7 +979,9 @@ export const PortalCrmLeads = ({
                                 setActiveLead(row);
                                 setSiteVisitModalOpen(true);
                               }}
-                              className="w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                              className={`w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                                can("lead.update") ? "" : "hidden"
+                              }`}
                             >
                               <ClipboardList size={14} className="text-slate-500" />
                               <span>Schedule Site Visit</span>
@@ -969,7 +995,9 @@ export const PortalCrmLeads = ({
                                 setActiveLead(row);
                                 setPriorityModalOpen(true);
                               }}
-                              className="w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                              className={`w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                                can("lead.update") ? "" : "hidden"
+                              }`}
                             >
                               <Target size={14} className="text-slate-500" />
                               <span>Change Priority</span>
@@ -988,7 +1016,9 @@ export const PortalCrmLeads = ({
                                     : "Converted";
                                 handleUpdateStatus(row.id, nextStatus);
                               }}
-                              className="w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                              className={`w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                                can("lead.update") ? "" : "hidden"
+                              }`}
                             >
                               <Zap size={14} className="text-slate-500" />
                               <span>Set Status</span>
@@ -1001,7 +1031,9 @@ export const PortalCrmLeads = ({
                                 setContextMenuLeadId(null);
                                 toast.success(`Editing lead: ${row.name}`);
                               }}
-                              className="w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                              className={`w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                                can("lead.update") ? "" : "hidden"
+                              }`}
                             >
                               <Edit3 size={14} className="text-slate-500" />
                               <span>Edit Lead</span>
@@ -1015,7 +1047,9 @@ export const PortalCrmLeads = ({
                                 setLeads((prev) => prev.filter((l) => l.id !== row.id));
                                 toast.success("Lead removed");
                               }}
-                              className="w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                              className={`w-full px-3.5 py-2 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                                can("lead.update") ? "" : "hidden"
+                              }`}
                             >
                               <Trash2 size={14} className="text-slate-500" />
                               <span>Delete</span>

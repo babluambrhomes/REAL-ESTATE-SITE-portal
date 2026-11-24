@@ -5,19 +5,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setActiveWorkspace } from "@/store/slice/workspaceSlice";
+import { setSelectedWorkspace } from "@/store/slice/workspaceSlice";
 import type { Workspace } from "@/types";
 
 export const WorkspaceSwitcher = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  const { workspaces, activeId } = useAppSelector((state) => state.workspace);
+  const { workspaces, selectedWorkspaceId } = useAppSelector((state) => state.workspace);
   const [manualOpen, setManualOpen] = useState(false);
   const [selectionDismissed, setSelectionDismissed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const active = workspaces.find((workspace) => workspace.id === activeId);
-  const needsSelection = activeId === null && workspaces.length > 0;
+  const active = workspaces.find((workspace) => workspace.id === selectedWorkspaceId);
+  const needsSelection = selectedWorkspaceId === null && workspaces.length > 0;
   const isOpen = needsSelection ? !selectionDismissed : manualOpen;
 
   const toggleOpen = () => {
@@ -48,14 +48,12 @@ export const WorkspaceSwitcher = () => {
   }, [isOpen, needsSelection]);
 
   const handleSelect = (workspace: Workspace) => {
-    dispatch(setActiveWorkspace(workspace.id));
+    dispatch(setSelectedWorkspace(workspace.id));
     queryClient.removeQueries();
     setManualOpen(false);
     setSelectionDismissed(false);
     toast.success(`Switched to ${workspace.label}`);
   };
-
-console.log(workspaces)
 
   if (workspaces.length === 0) {
     return (
@@ -100,7 +98,7 @@ console.log(workspaces)
             Switch workspace
           </p>
           {workspaces.map((workspace) => {
-            const isActive = workspace.id === activeId;
+            const isActive = workspace.id === selectedWorkspaceId;
             return (
               <button
                 key={workspace.id}

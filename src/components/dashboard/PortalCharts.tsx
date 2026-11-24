@@ -65,7 +65,12 @@ const PIPELINE_DATA = [
   },
 ];
 
-export const PortalCharts = () => {
+interface PortalChartsProps {
+  totalLeads?: number;
+  newLeads?: number;
+}
+
+export const PortalCharts = ({ totalLeads, newLeads }: PortalChartsProps) => {
   const [timeRange, setTimeRange] = useState("Last 30 Days");
 
   return (
@@ -110,9 +115,9 @@ export const PortalCharts = () => {
               <TrendingUp size={16} strokeWidth={2.5} />
             </div>
             <div>
-              <span className="text-[18px] font-bold text-[#0B132B] block leading-none">
-                86
-              </span>
+                <span className="text-[18px] font-bold text-[#0B132B] block leading-none">
+                  {totalLeads ?? 86}
+                </span>
               <span className="text-[11px] text-slate-400 font-medium">
                 Total leads
               </span>
@@ -227,7 +232,7 @@ export const PortalCharts = () => {
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center text-[12.5px] font-bold ${item.pillBg} ${item.pillText} shrink-0`}
               >
-                {item.count}
+                {item.stage === "New" && newLeads !== undefined ? newLeads : item.count}
               </div>
 
               {/* Stage label */}

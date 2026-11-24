@@ -32,10 +32,7 @@ function isOtpSentResponse(
 function applyAuth(dispatch: AppDispatch, data: AuthData) {
   dispatch(setAuth(data));
   dispatch(
-    hydrateWorkspaces({
-      workspaces: data.workspaces,
-      activeWorkspaceId: data.activeWorkspaceId,
-    })
+    hydrateWorkspaces({ workspaces: data.workspaces })
   );
 }
 

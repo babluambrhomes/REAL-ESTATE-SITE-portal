@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { PortalSidebar } from "@/components/layout/PortalSidebar";
 import { PortalHeader } from "@/components/layout/PortalHeader";
 import { useAppSelector } from "@/store/hooks";
 import { PageLoader } from "@/components/ui/PageLoader";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 export default function PortalLayout({
   children,
@@ -15,19 +16,26 @@ export default function PortalLayout({
   const [collapsed, setCollapsed] = useState(true);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const { canPath, isReady } = usePermissions();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
+    if (!mounted) return;
+    if (!isAuthenticated) {
       router.replace("/login");
+      return;
     }
-  }, [mounted, isAuthenticated, router]);
+    if (isReady && !canPath(pathname)) {
+      router.replace("/unauthorized");
+    }
+  }, [mounted, isAuthenticated, isReady, canPath, pathname, router]);
 
-  if (!mounted) {
+  if (!mounted || !isReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F4F7FB] text-sm text-slate-500 font-jakarta">
         <PageLoader label="Loading portal..." />
@@ -35,7 +43,7 @@ export default function PortalLayout({
     );
   }
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated || !canPath(pathname)) return null;
 
   return (
     <div className="min-h-screen bg-[#F4F7FB] font-jakarta antialiased flex">

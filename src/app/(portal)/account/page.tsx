@@ -47,6 +47,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateUser } from "@/store/slice/authSlice";
 import { userApi } from "@/lib/features/user/userApi";
 import { sellerApi } from "@/lib/features/seller/sellerApi";
+import { useDashboardSummary } from "@/lib/features/dashboard/useDashboardSummary";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 export default function AccountSettings() {
   const dispatch = useAppDispatch();
@@ -57,6 +59,10 @@ export default function AccountSettings() {
     "";
   const userEmail = user?.email || "";
   const userPhone = user?.phone || "";
+  const { data: dashboardSummary, isLoading: isSummaryLoading } = useDashboardSummary();
+  const { can } = usePermissions();
+  const canUpdateProfile = can("sellerProfile.update");
+  const profilePercentage = dashboardSummary?.profile.percentage ?? 0;
 
 
   const [activeTab, setActiveTab] = useState<
@@ -191,6 +197,10 @@ export default function AccountSettings() {
 
   const handleSave = async (e?: React.FormEvent, nextTab?: any) => {
     if (e) e.preventDefault();
+    if (!canUpdateProfile) {
+      toast.error("You do not have permission to update this profile.");
+      return;
+    }
     const parts = fullName.trim().split(" ");
     const firstName = parts[0] || "";
     const lastName = parts.slice(1).join(" ") || "";
@@ -372,9 +382,14 @@ export default function AccountSettings() {
                 </span>
                 <div className="flex items-center gap-3">
                   <div className="w-40 sm:w-48 h-2 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="w-[78%] h-full bg-[#1865F2] rounded-full" />
+                    <div
+                      className="h-full bg-[#1865F2] rounded-full transition-all duration-500"
+                      style={{ width: `${Math.max(0, Math.min(100, profilePercentage))}%` }}
+                    />
                   </div>
-                  <span className="text-xs font-bold text-slate-700">78%</span>
+                  <span className="text-xs font-bold text-slate-700">
+                    {isSummaryLoading ? "—" : `${profilePercentage}%`}
+                  </span>
                 </div>
                 <p className="text-[11px] text-slate-500 leading-snug mt-1">
                   Complete your profile to get more leads and increase your visibility on Roofin.
@@ -526,14 +541,16 @@ export default function AccountSettings() {
                     input.onchange = () => toast.success("New profile picture updated!");
                     input.click();
                   }}
-                  className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#1865F2] hover:bg-blue-700 text-white flex items-center justify-center border-2 border-white shadow-xs cursor-pointer"
+                  className={`absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#1865F2] hover:bg-blue-700 text-white flex items-center justify-center border-2 border-white shadow-xs cursor-pointer ${
+                    canUpdateProfile ? "" : "hidden"
+                  }`}
                 >
                   <Camera size={11} />
                 </button>
               </div>
 
               {/* Upload & Remove Buttons */}
-              <div className="flex flex-col gap-2 shrink-0">
+              <div className={`flex flex-col gap-2 shrink-0 ${canUpdateProfile ? "" : "hidden"}`}>
                 <button
                   type="button"
                   onClick={() => {
@@ -778,7 +795,11 @@ export default function AccountSettings() {
               ← Cancel
             </button>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div
+              className={`flex items-center gap-3 w-full sm:w-auto justify-end ${
+                canUpdateProfile ? "" : "hidden"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => {
@@ -1088,7 +1109,11 @@ export default function AccountSettings() {
               ← Cancel
             </button>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div
+              className={`flex items-center gap-3 w-full sm:w-auto justify-end ${
+                canUpdateProfile ? "" : "hidden"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => toast.success("Draft saved successfully!")}
@@ -1289,7 +1314,11 @@ export default function AccountSettings() {
               ← Cancel
             </button>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div
+              className={`flex items-center gap-3 w-full sm:w-auto justify-end ${
+                canUpdateProfile ? "" : "hidden"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => toast.success("Draft saved successfully!")}
@@ -1809,7 +1838,11 @@ export default function AccountSettings() {
               ← Cancel
             </button>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div
+              className={`flex items-center gap-3 w-full sm:w-auto justify-end ${
+                canUpdateProfile ? "" : "hidden"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => toast.success("Draft saved successfully!")}
@@ -1987,7 +2020,9 @@ export default function AccountSettings() {
                     <button
                       type="button"
                       onClick={() => toast.success("Password updated successfully!")}
-                      className="w-full py-2.5 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                      className={`w-full py-2.5 rounded-lg bg-[#1865F2] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer ${
+                        canUpdateProfile ? "" : "hidden"
+                      }`}
                     >
                       Update Password
                     </button>
@@ -2214,7 +2249,9 @@ export default function AccountSettings() {
                     <button
                       type="button"
                       onClick={() => toast.error("Account deletion requested")}
-                      className="px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+                      className={`px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
+                        canUpdateProfile ? "" : "hidden"
+                      }`}
                     >
                       Delete My Account
                     </button>
@@ -2234,7 +2271,11 @@ export default function AccountSettings() {
               ← Cancel
             </button>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div
+              className={`flex items-center gap-3 w-full sm:w-auto justify-end ${
+                canUpdateProfile ? "" : "hidden"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => toast.success("Draft saved successfully!")}

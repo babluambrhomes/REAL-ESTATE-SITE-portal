@@ -27,6 +27,7 @@ import {
 } from "@/components/shared/PortalModals";
 import toast from "react-hot-toast";
 import { propertyApi } from "@/lib/features/property/propertyApi";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 interface PortalLeadDetailProps {
   onBack?: () => void;
@@ -41,6 +42,7 @@ export const PortalLeadDetail = ({
   onAddNote,
   onChangePriority,
 }: PortalLeadDetailProps) => {
+  const { can } = usePermissions();
   const [internalNoteModalOpen, setInternalNoteModalOpen] = useState(false);
   const [internalVisitModalOpen, setInternalVisitModalOpen] = useState(false);
   const [internalPriorityModalOpen, setInternalPriorityModalOpen] = useState(false);
@@ -88,7 +90,9 @@ export const PortalLeadDetail = ({
                 <button
                   type="button"
                   onClick={onChangePriority || (() => setInternalPriorityModalOpen(true))}
-                  className="px-2.5 py-0.5 rounded-full bg-[#FFE4E6] text-[#E11D48] text-[11px] font-bold flex items-center gap-1 cursor-pointer hover:bg-rose-200 transition-colors"
+                  className={`px-2.5 py-0.5 rounded-full bg-[#FFE4E6] text-[#E11D48] text-[11px] font-bold flex items-center gap-1 cursor-pointer hover:bg-rose-200 transition-colors ${
+                    can("lead.update") ? "" : "hidden"
+                  }`}
                 >
                   <span>🔥</span>
                   <span>{leadPriority}</span>
@@ -174,7 +178,9 @@ export const PortalLeadDetail = ({
             <button
               type="button"
               onClick={() => setInternalReassignModalOpen(true)}
-              className="text-xs font-bold text-[#1865F2] hover:underline cursor-pointer"
+              className={`text-xs font-bold text-[#1865F2] hover:underline cursor-pointer ${
+                can("lead.update") ? "" : "hidden"
+              }`}
             >
               Reassign
             </button>
@@ -359,7 +365,9 @@ export const PortalLeadDetail = ({
               <button
                 type="button"
                 onClick={onAddNote}
-                className="text-xs font-bold text-[#1865F2] hover:underline flex items-center gap-1 cursor-pointer"
+                className={`text-xs font-bold text-[#1865F2] hover:underline flex items-center gap-1 cursor-pointer ${
+                  can("lead.update") ? "" : "hidden"
+                }`}
               >
                 <Plus size={13} />
                 <span>Add Note</span>
@@ -413,7 +421,9 @@ export const PortalLeadDetail = ({
               <button
                 type="button"
                 onClick={onScheduleVisit || (() => setInternalVisitModalOpen(true))}
-                className="p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                className={`p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
+                  can("siteVisit.update") ? "" : "hidden"
+                }`}
               >
                 <Calendar size={18} className="text-[#1865F2]" />
                 <span className="text-[10px] font-bold text-slate-700 leading-tight">
@@ -424,7 +434,9 @@ export const PortalLeadDetail = ({
               <button
                 type="button"
                 onClick={onScheduleVisit || (() => setInternalVisitModalOpen(true))}
-                className="p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                className={`p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
+                  can("siteVisit.update") ? "" : "hidden"
+                }`}
               >
                 <Building size={18} className="text-[#1865F2]" />
                 <span className="text-[10px] font-bold text-slate-700 leading-tight">
@@ -435,7 +447,9 @@ export const PortalLeadDetail = ({
               <button
                 type="button"
                 onClick={() => setInternalReassignModalOpen(true)}
-                className="p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                className={`p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
+                  can("lead.update") ? "" : "hidden"
+                }`}
               >
                 <Share2 size={18} className="text-[#1865F2]" />
                 <span className="text-[10px] font-bold text-slate-700 leading-tight">
@@ -446,7 +460,9 @@ export const PortalLeadDetail = ({
               <button
                 type="button"
                 onClick={onAddNote || (() => setInternalNoteModalOpen(true))}
-                className="p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                className={`p-3 rounded-xl border border-slate-200 hover:border-[#1865F2] hover:bg-blue-50/40 flex flex-col items-center justify-center text-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
+                  can("lead.update") ? "" : "hidden"
+                }`}
               >
                 <Plus size={18} className="text-[#1865F2]" />
                 <span className="text-[10px] font-bold text-slate-700 leading-tight">
@@ -522,7 +538,9 @@ export const PortalLeadDetail = ({
               <button
                 type="button"
                 onClick={() => setInternalVisitModalOpen(true)}
-                className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                className={`text-slate-400 hover:text-slate-600 transition-colors cursor-pointer ${
+                  can("siteVisit.update") ? "" : "hidden"
+                }`}
               >
                 <Pencil size={13} />
               </button>
@@ -547,6 +565,10 @@ export const PortalLeadDetail = ({
         isOpen={internalNoteModalOpen}
         onClose={() => setInternalNoteModalOpen(false)}
         onSave={(note: any) => {
+          if (!can("lead.update")) {
+            toast.error("You do not have permission to update leads.");
+            return;
+          }
           if (note?.details) {
             propertyApi
               .submitEnquiry({
@@ -566,6 +588,10 @@ export const PortalLeadDetail = ({
         isOpen={internalVisitModalOpen}
         onClose={() => setInternalVisitModalOpen(false)}
         onSave={(data: any) => {
+          if (!can("siteVisit.update")) {
+            toast.error("You do not have permission to schedule site visits.");
+            return;
+          }
           propertyApi
             .bookSiteVisit({
               visitDate: new Date().toISOString().slice(0, 10),
@@ -585,6 +611,10 @@ export const PortalLeadDetail = ({
         onClose={() => setInternalPriorityModalOpen(false)}
         currentPriority={leadPriority}
         onSelectPriority={(p: string) => {
+          if (!can("lead.update")) {
+            toast.error("You do not have permission to update leads.");
+            return;
+          }
           setLeadPriority(p);
           setInternalPriorityModalOpen(false);
           toast.success(`Lead priority updated to ${p}!`);
@@ -596,6 +626,10 @@ export const PortalLeadDetail = ({
         onClose={() => setInternalReassignModalOpen(false)}
         selectedCount={1}
         onAssign={(agent) => {
+          if (!can("lead.update")) {
+            toast.error("You do not have permission to reassign leads.");
+            return;
+          }
           setInternalReassignModalOpen(false);
           toast.success(`Lead reassigned to ${agent}!`);
         }}

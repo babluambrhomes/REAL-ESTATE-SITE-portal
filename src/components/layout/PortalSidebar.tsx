@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Users } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearAuth } from "@/store/slice/authSlice";
+import { resetWorkspace } from "@/store/slice/workspaceSlice";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 interface PortalSidebarProps {
   collapsed: boolean;
@@ -61,6 +63,7 @@ export const PortalSidebar = ({
   const isBoost = pathname === "/upgrade-plane";
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+  const { can, canAny } = usePermissions();
 
   // Accordion state for dropdowns
   const [propertiesOpen, setPropertiesOpen] = useState(!pathname.startsWith("/crm"));
@@ -83,6 +86,7 @@ export const PortalSidebar = ({
 
   const handleLogout = () => {
     dispatch(clearAuth());
+    dispatch(resetWorkspace());
     router.push("/login");
   };
 
@@ -186,7 +190,11 @@ export const PortalSidebar = ({
         </div>
 
         {/* 2. Properties */}
-        <div className="relative">
+        <div
+          className={`relative ${
+            canAny(["property.read", "property.create", "property.publish"]) ? "" : "hidden"
+          }`}
+        >
           <button
             type="button"
             onClick={() => {
@@ -238,7 +246,9 @@ export const PortalSidebar = ({
               <button
                 type="button"
                 onClick={() => router.push("/property/add-new")}
-                className={`${subItemBase} ${isMyPost ? subActive : subIdle}`}
+                className={`${subItemBase} ${isMyPost ? subActive : subIdle} ${
+                  can("property.create") ? "" : "hidden"
+                }`}
               >
                 <SidebarIcon
                   src="/icon/sidebar/my-post.svg"
@@ -279,7 +289,9 @@ export const PortalSidebar = ({
               <button
                 type="button"
                 onClick={() => router.push("/upgrade-plane")}
-                className={`${subItemBase} ${isBoost ? subActive : subIdle}`}
+                className={`${subItemBase} ${isBoost ? subActive : subIdle} ${
+                  can("property.publish") ? "" : "hidden"
+                }`}
               >
                 <SidebarIcon
                   src="/icon/sidebar/boost-property.svg"
@@ -332,7 +344,7 @@ export const PortalSidebar = ({
                   isMyPost
                     ? "bg-[#EAF2FF] text-[#1865F2]"
                     : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
-                }`}
+                } ${can("property.create") ? "" : "hidden"}`}
                 title="My Post"
               >
                 <SidebarIcon
@@ -380,7 +392,7 @@ export const PortalSidebar = ({
                   isBoost
                     ? "bg-[#EAF2FF] text-[#1865F2]"
                     : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
-                }`}
+                } ${can("property.publish") ? "" : "hidden"}`}
                 title="Boost Property"
               >
                 <SidebarIcon
@@ -412,7 +424,7 @@ export const PortalSidebar = ({
         </div>
 
         {/* 3. CRM */}
-        <div className="relative">
+        <div className={`relative ${can("lead:read") ? "" : "hidden"}`}>
           <button
             type="button"
             onClick={() => {
@@ -483,7 +495,7 @@ export const PortalSidebar = ({
                 onClick={() => router.push("/crm?tab=site-visit")}
                 className={`${subItemBase} ${
                   isCrmTab("site-visit") ? subActive : subIdle
-                }`}
+                } ${can("siteVisit.read") ? "" : "hidden"}`}
               >
                 <SidebarIcon
                   src="/icon/sidebar/site-visits.svg"
@@ -597,7 +609,7 @@ export const PortalSidebar = ({
                   isCrmTab("site-visit")
                     ? "bg-[#EAF2FF] text-[#1865F2]"
                     : "text-slate-500 hover:bg-slate-100 hover:text-[#1865F2]"
-                }`}
+                } ${can("siteVisit.read") ? "" : "hidden"}`}
                 title="Site Visits"
               >
                 <SidebarIcon
@@ -742,13 +754,29 @@ export const PortalSidebar = ({
           {!collapsed && <span>Insights</span>}
         </button>
 
+        {canAny(["member.invite", "member.update", "role.manage"]) && (
+          <button
+            type="button"
+            onClick={() => router.push("/team")}
+            className={`${navItemBase} ${
+              pathname === "/team" ? activeItem : idleItem
+            } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
+            title="Team"
+          >
+            <Users size={18} />
+            {!collapsed && <span>Team</span>}
+          </button>
+        )}
+
         {/* 8. Account */}
         <button
           type="button"
           onClick={() => router.push("/account")}
           className={`${navItemBase} ${
             pathname === "/account" ? activeItem : idleItem
-          } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"}`}
+          } ${collapsed ? "justify-center h-11 w-11 mx-auto px-0" : "px-3.5 py-2.5"} ${
+            can("sellerProfile:read") ? "" : "hidden"
+          }`}
           title="Account"
         >
           <SidebarIcon
@@ -763,7 +791,7 @@ export const PortalSidebar = ({
       {/* Bottom Area */}
       <div className="p-3 border-t border-white/15 space-y-2 shrink-0">
         {/* Upgrade Card matching Figma */}
-        {!collapsed && (
+        {!collapsed && can("property.publish") && (
           <div
             onClick={() => router.push("/upgrade-plane")}
             className="relative w-full cursor-pointer group select-none transition-transform hover:scale-[1.02]"
@@ -815,7 +843,7 @@ export const PortalSidebar = ({
           onClick={() => router.push("/account")}
           className={`flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer ${
             collapsed ? "justify-center px-0" : ""
-          }`}
+          } ${can("sellerProfile:read") ? "" : "hidden"}`}
           title={userName}
         >
           <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white/80 shrink-0 bg-white/20 shadow-xs">

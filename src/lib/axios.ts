@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import { store } from "@/store/store";
+import { resetWorkspace } from "@/store/slice/workspaceSlice";
 import type { ApiError } from "@/types";
 
 type RetryConfig = AxiosRequestConfig & { _retry?: boolean };
@@ -23,8 +24,8 @@ apiClient.interceptors.request.use((config) => {
   }
 
   delete config.headers["x-organization-id"];
-  const { workspaces, activeId } = state.workspace;
-  const activeWorkspace = workspaces.find((workspace) => workspace.id === activeId);
+  const { workspaces, selectedWorkspaceId } = state.workspace;
+  const activeWorkspace = workspaces.find((workspace) => workspace.id === selectedWorkspaceId);
   if (
     token &&
     activeWorkspace?.type === "ORGANIZATION" &&
@@ -68,6 +69,7 @@ apiClient.interceptors.response.use(
           return apiClient.request(original);
         } catch (refreshError) {
           store.dispatch({ type: "auth/logout" });
+          store.dispatch(resetWorkspace());
           if (typeof window !== "undefined") {
             window.location.href = "/login";
           }
@@ -76,6 +78,7 @@ apiClient.interceptors.response.use(
       }
 
       store.dispatch({ type: "auth/logout" });
+      store.dispatch(resetWorkspace());
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }

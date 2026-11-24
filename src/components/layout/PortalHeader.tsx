@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 import toast from "react-hot-toast";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { useDashboardSummary } from "@/lib/features/dashboard/useDashboardSummary";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 interface PortalHeaderProps {
   onSearch?: (query: string) => void;
@@ -68,6 +70,9 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
   const [searchVal, setSearchVal] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
+  const { data: dashboardSummary, isLoading: isSummaryLoading } = useDashboardSummary();
+  const { can, canAny } = usePermissions();
+  const profilePercentage = dashboardSummary?.profile.percentage;
 
   const userName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
@@ -122,7 +127,9 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
         </form>
 
         {/* Message / Chat Icon */}
-        <div className="relative">
+        <div
+          className={canAny(["buyerQuestion.read", "lead.read"]) ? "relative" : "hidden"}
+        >
           <button
             type="button"
             onClick={() => {
@@ -240,15 +247,30 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
         </div>
 
         {/* Profile Completion Card (Figma Exact 1:1) */}
-        <div className="hidden lg:flex flex-col justify-center bg-white border border-slate-200 rounded-xl px-3.5 py-2 shadow-2xs min-w-[210px]">
+        <div
+          className={
+            can("sellerProfile.read")
+              ? "hidden lg:flex flex-col justify-center bg-white border border-slate-200 rounded-xl px-3.5 py-2 shadow-2xs min-w-[210px]"
+              : "hidden"
+          }
+        >
           <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 mb-1">
             <span>Profile Completion</span>
-            <span className="text-[#0B132B]">78%</span>
+            {isSummaryLoading && profilePercentage === undefined ? (
+              <span className="h-3 w-8 animate-pulse rounded bg-slate-100" />
+            ) : (
+              <span className="text-[#0B132B]">{profilePercentage ?? 0}%</span>
+            )}
           </div>
 
           {/* Progress bar */}
           <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1">
-            <div className="h-full bg-[#1865F2] rounded-full w-[78%]" />
+            <div
+              className="h-full bg-[#1865F2] rounded-full transition-all duration-500"
+              style={{
+                width: `${Math.max(0, Math.min(100, profilePercentage ?? 0))}%`,
+              }}
+            />
           </div>
 
           <div className="flex items-center justify-between text-[9.5px]">

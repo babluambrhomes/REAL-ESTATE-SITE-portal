@@ -64,9 +64,11 @@ const BUYER_DEMANDS = [
 ];
 
 import { useState } from "react";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsProps) => {
   const [selectedMarket, setSelectedMarket] = useState("Delhi NCR");
+  const { can } = usePermissions();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 font-jakarta">
@@ -79,7 +81,9 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("my-projects")}
-            className="text-[12px] font-semibold text-[#1865F2] hover:underline flex items-center gap-1 cursor-pointer"
+            className={`text-[12px] font-semibold text-[#1865F2] hover:underline flex items-center gap-1 cursor-pointer ${
+              can("property.read") ? "" : "hidden"
+            }`}
           >
             <span>View All</span>
             <ArrowRight size={13} />
@@ -225,7 +229,9 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={onPostProperty}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50 ${
+              can("property.create") ? "" : "hidden"
+            }`}
           >
             <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Image
@@ -245,7 +251,9 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("my-projects")}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50 ${
+              can("property.create") ? "" : "hidden"
+            }`}
           >
             <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Image
@@ -265,7 +273,9 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("crm-leads")}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50 ${
+              can("lead.read") ? "" : "hidden"
+            }`}
           >
             <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Image
@@ -285,7 +295,9 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("crm-leads")}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50 ${
+              can("siteVisit.update") ? "" : "hidden"
+            }`}
           >
             <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Image
@@ -305,7 +317,9 @@ export const PortalWidgets = ({ onPostProperty, onSelectView }: PortalWidgetsPro
           <button
             type="button"
             onClick={() => onSelectView?.("boost-property")}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50"
+            className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-[#F1F6FE] hover:bg-[#E5EEFD] transition-all text-center cursor-pointer group shadow-2xs border border-blue-50/50 ${
+              can("property.publish") ? "" : "hidden"
+            }`}
           >
             <div className="w-9 h-9 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Image

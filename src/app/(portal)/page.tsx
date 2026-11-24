@@ -3,26 +3,41 @@
 import { useRouter } from "next/navigation";
 import { PortalStats } from "@/components/dashboard/PortalStats";
 import { PortalCharts } from "@/components/dashboard/PortalCharts";
-import { PortalProperties } from "@/components/properties/PortalProperties";
+
 import { PortalWidgets } from "@/components/dashboard/PortalWidgets";
+import { DashboardVerificationCard } from "@/components/dashboard/DashboardVerificationCard";
+import { useDashboardSummary } from "@/lib/features/dashboard/useDashboardSummary";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useDashboardSummary();
 
   return (
     <>
-      <PortalStats />
-      <PortalCharts />
-      <PortalProperties
-        onPostProperty={() => router.push("/property/add-new")}
-        onViewHealthScore={(name) =>
-          router.push(`/property/health-score/${encodeURIComponent(name || "property")}`)
-        }
-        onViewDiagnosis={(name) =>
-          router.push(`/property/performance-diagnosis/${encodeURIComponent(name || "property")}`)
-        }
-        onSelectLead={(leadId) => router.push(`/crm/${leadId}`)}
+      <PortalStats
+        activeProperties={data?.properties.active}
+        followers={data?.followers.total}
+        newLeads={data?.leads.newCount}
+        isLoading={isLoading}
       />
+      <PortalCharts
+        totalLeads={data?.leads.total}
+        newLeads={data?.leads.newCount}
+      />
+      <DashboardVerificationCard
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        errorMessage={error?.message}
+        onRetry={() => refetch()}
+      />
+     
       <PortalWidgets
         onPostProperty={() => router.push("/property/add-new")}
         onSelectView={(view) => {

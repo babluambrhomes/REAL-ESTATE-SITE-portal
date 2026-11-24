@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { propertyApi } from "@/lib/features/property/propertyApi";
+import { usePermissions } from "@/lib/auth/usePermissions";
 
 interface PortalPostPropertyProps {
   onCancel: () => void;
@@ -135,6 +136,7 @@ export const PortalPostProperty = ({
   onComplete,
 }: PortalPostPropertyProps) => {
   const { user } = useAppSelector((state) => state.auth);
+  const { can } = usePermissions();
   const listedUserName =
     [user?.person?.firstName, user?.person?.lastName].filter(Boolean).join(" ") ||
     user?.email ||
@@ -358,6 +360,11 @@ export const PortalPostProperty = ({
 
   // Video Upload Handler
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!can("video.upload")) {
+      toast.error("You do not have permission to upload videos.");
+      e.target.value = "";
+      return;
+    }
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
@@ -543,6 +550,10 @@ export const PortalPostProperty = ({
   };
 
   const handleNext = () => {
+    if (!can("property.create")) {
+      toast.error("You do not have permission to create properties.");
+      return;
+    }
     if (!validateStep(currentStep)) return;
 
     if (currentStep < 7) {
@@ -660,6 +671,10 @@ export const PortalPostProperty = ({
   };
 
   const handleSaveDraft = () => {
+    if (!can("property.create")) {
+      toast.error("You do not have permission to create properties.");
+      return;
+    }
     try {
       const draftData = {
         sellerRole,
@@ -2129,7 +2144,9 @@ export const PortalPostProperty = ({
               ) : (
                 <div
                   onClick={() => videoInputRef.current?.click()}
-                  className="rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-300 p-6 flex flex-col items-center justify-center text-center bg-slate-50/50 hover:bg-blue-50/30 transition-colors cursor-pointer"
+                  className={`rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-300 p-6 flex flex-col items-center justify-center text-center bg-slate-50/50 hover:bg-blue-50/30 transition-colors cursor-pointer ${
+                    can("video.upload") ? "" : "hidden"
+                  }`}
                 >
                   <Video size={24} className="text-[#1865F2] mb-2" />
                   <span className="text-xs font-bold text-slate-800">Upload Video Tour</span>
@@ -3415,7 +3432,9 @@ export const PortalPostProperty = ({
                   <div className="grid grid-cols-2 gap-3">
                     <div
                       onClick={() => videoInputRef.current?.click()}
-                      className="rounded-xl border-2 border-dashed border-blue-200 p-4 flex flex-col items-center justify-center text-center bg-blue-50/40 hover:bg-blue-50/70 transition-colors cursor-pointer min-h-[130px]"
+                      className={`rounded-xl border-2 border-dashed border-blue-200 p-4 flex flex-col items-center justify-center text-center bg-blue-50/40 hover:bg-blue-50/70 transition-colors cursor-pointer min-h-[130px] ${
+                        can("video.upload") ? "" : "hidden"
+                      }`}
                     >
                       <Video size={22} className="text-[#1865F2] mb-1.5" />
                       <span className="text-[11px] font-bold text-[#1865F2]">Update Video</span>

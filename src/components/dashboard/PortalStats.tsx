@@ -8,14 +8,16 @@ interface PortalStatsProps {
   newLeads?: number;
   propertyViews?: string;
   siteVisits?: string;
+  isLoading?: boolean;
 }
 
 export const PortalStats = ({
-  activeProperties = 24,
-  followers = 8,
-  newLeads = 500,
+  activeProperties,
+  followers,
+  newLeads,
   propertyViews = "12.4K",
   siteVisits = "12.4K",
+  isLoading = false,
 }: PortalStatsProps) => {
   const stats = [
     {
@@ -64,9 +66,13 @@ export const PortalStats = ({
           </div>
 
           <div className="min-w-0">
-            <h3 className="text-[22px] sm:text-[24px] font-bold text-[#0B132B] leading-none tracking-tight">
-              {item.value}
-            </h3>
+            {isLoading && idx < 3 ? (
+              <div className="h-6 w-12 animate-pulse rounded-md bg-slate-100" />
+            ) : (
+              <h3 className="text-[22px] sm:text-[24px] font-bold text-[#0B132B] leading-none tracking-tight">
+                {item.value}
+              </h3>
+            )}
             <p className="text-[12px] sm:text-[13px] font-medium text-slate-500 mt-1.5 truncate">
               {item.label}
             </p>

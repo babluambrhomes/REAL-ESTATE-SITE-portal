@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateUser, logout } from "@/store/slice/authSlice";
-import { hydrateWorkspaces } from "@/store/slice/workspaceSlice";
+import { hydrateWorkspaces, resetWorkspace } from "@/store/slice/workspaceSlice";
 import { userApi } from "@/lib/features/user/userApi";
 import { authApi } from "@/lib/features/auth/authApi";
 
@@ -29,6 +29,7 @@ export const AuthInitializer = () => {
         // If 401 unauthorized and refresh also failed, log out
         if (err?.response?.status === 401) {
           dispatch(logout());
+          dispatch(resetWorkspace());
         }
       });
 
@@ -36,10 +37,12 @@ export const AuthInitializer = () => {
       .getWorkspaces()
       .then((res) => {
         if (isMounted && res.data) {
-          dispatch(hydrateWorkspaces({ ...res.data, preserveActive: true }));
+          dispatch(hydrateWorkspaces({ workspaces: res.data.workspaces }));
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        dispatch(hydrateWorkspaces({ workspaces: [] }));
+      });
 
     return () => {
       isMounted = false;
