@@ -87,6 +87,8 @@ export const PortalHeader = ({ onSearch }: PortalHeaderProps) => {
     }
   };
 
+  console.log("user",user)
+
   return (
     <header className="w-full bg-transparent flex flex-col md:flex-row md:items-center justify-between gap-4 font-jakarta relative z-30">
       {/* Left: Greeting & Subtitle */}
