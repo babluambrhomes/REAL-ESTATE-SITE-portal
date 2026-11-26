@@ -23,10 +23,6 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-
-  console.log(accessToken, verificationToken)
-
-
   delete config.headers["x-organization-id"];
   const { workspaces, selectedWorkspaceId } = state.workspace;
   const activeWorkspace = workspaces.find((workspace) => workspace.id === selectedWorkspaceId);

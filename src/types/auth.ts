@@ -21,7 +21,6 @@ export interface LoginRequest {
 }
 
 export interface VerifyOtpRequest {
-  identifier: string;
   code: string;
   purpose:
     | "EMAIL_VERIFICATION"
@@ -127,6 +126,22 @@ export interface OtpSentResponse {
   statusCode: number;
   data: {
     verificationToken: string | null;
+  };
+  message: string;
+  success: true;
+}
+
+export interface RegisterOtpResponse {
+  statusCode: number;
+  data: {
+    message: string;
+    requiresOtp: boolean;
+    verificationToken: string | null;
+    status: string;
+    user: {
+      phone: string;
+      firstName: string;
+    };
   };
   message: string;
   success: true;

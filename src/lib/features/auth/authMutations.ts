@@ -5,7 +5,13 @@ import { setAuth, setRequiresOtp, setOtpState, setVerificationToken } from "@/st
 import { hydrateWorkspaces } from "@/store/slice/workspaceSlice";
 import { useAppDispatch } from "@/store/hooks";
 import type { AppDispatch } from "@/store/store";
-import type { AuthData, AuthSuccessResponse, OtpSentResponse, ApiError } from "@/types";
+import type {
+  AuthData,
+  AuthSuccessResponse,
+  OtpSentResponse,
+  RegisterOtpResponse,
+  ApiError,
+} from "@/types";
 import type {
   RegisterRequest,
   LoginRequest,
@@ -20,20 +26,35 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return axiosError.response?.data?.message || fallback;
 }
 
-function isOtpSentResponse(
-  response: AuthSuccessResponse | OtpSentResponse
-): response is OtpSentResponse {
-  return (
-    response.message?.toLowerCase().includes("otp") ||
-    response.message?.toLowerCase().includes("verify")
+type AuthResponse = AuthSuccessResponse | OtpSentResponse | RegisterOtpResponse;
+type OtpChallengeResponse = OtpSentResponse | RegisterOtpResponse;
+
+function isOtpChallenge(response: AuthResponse): response is OtpChallengeResponse {
+  const data = response.data as {
+    verificationToken?: string | null;
+    requiresOtp?: boolean;
+  };
+  return Boolean(data?.verificationToken || data?.requiresOtp) ||
+    response.message?.toLowerCase().includes("otp") === true;
+}
+
+function getVerificationToken(response: OtpChallengeResponse): string | null {
+  const token = response.data.verificationToken;
+  return typeof token === "string" && token ? token : null;
+}
+
+function isAuthData(data: unknown): data is AuthData {
+  return Boolean(
+    data &&
+      typeof data === "object" &&
+      "accessToken" in data &&
+      "user" in data
   );
 }
 
 function applyAuth(dispatch: AppDispatch, data: AuthData) {
   dispatch(setAuth(data));
-  dispatch(
-    hydrateWorkspaces({ workspaces: data.workspaces })
-  );
+  dispatch(hydrateWorkspaces({ workspaces: data.workspaces ?? [] }));
 }
 
 export function useLoginMutation() {
@@ -42,11 +63,12 @@ export function useLoginMutation() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (result, variables) => {
-      if (isOtpSentResponse(result)) {
-        const identifier = variables.email || variables.phone || "";
+      if (isOtpChallenge(result)) {
+        const identifier = variables.phone || variables.email || "";
+        const verificationToken = getVerificationToken(result);
 
-        if ("verificationToken" in result.data && result.data.verificationToken) {
-          dispatch(setVerificationToken(result.data.verificationToken));
+        if (verificationToken) {
+          dispatch(setVerificationToken(verificationToken));
         }
 
         dispatch(
@@ -57,7 +79,7 @@ export function useLoginMutation() {
         );
 
         dispatch(setRequiresOtp(true));
-      } else if (result.data) {
+      } else if (isAuthData(result.data)) {
         applyAuth(dispatch, result.data);
       }
     },
@@ -74,25 +96,25 @@ export function useRegisterMutation() {
     mutationFn: (data: RegisterRequest) => authApi.register(data),
     onSuccess: (result, variables) => {
       const isGoogleAuth = !!variables.FbTokenId || !!variables.accessToken;
-      const requiresVerification =
-        !isGoogleAuth && (result.message?.toLowerCase().includes("otp") ?? false);
 
-      if (requiresVerification) {
+      if (!isGoogleAuth && isOtpChallenge(result)) {
         const purpose = variables.phone
           ? "PHONE_VERIFICATION"
           : "EMAIL_VERIFICATION";
 
         const identifier = variables.phone || variables.email || "";
+        const verificationToken = getVerificationToken(result);
 
-        // Keep tokens received from backend
-        if (result.data) {
-          applyAuth(dispatch, result.data);
+        if (verificationToken) {
+          dispatch(setVerificationToken(verificationToken));
         }
 
-        // Then show OTP screen
         dispatch(setOtpState({ identifier, purpose }));
         dispatch(setRequiresOtp(true));
-      } else if (result.data) {
+        return;
+      }
+
+      if (isAuthData(result.data)) {
         applyAuth(dispatch, result.data);
       }
     },
@@ -108,7 +130,7 @@ export function useVerifyOtpMutation() {
   return useMutation({
     mutationFn: (data: VerifyOtpRequest) => authApi.verifyOtp(data),
     onSuccess: (result) => {
-      if (result.data) {
+      if (isAuthData(result.data)) {
         applyAuth(dispatch, result.data);
       }
     },

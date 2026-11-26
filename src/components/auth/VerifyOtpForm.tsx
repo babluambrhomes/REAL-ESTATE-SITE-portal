@@ -11,6 +11,7 @@ import { apiClient } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { setAuth } from "@/store/slice/authSlice";
+import { hydrateWorkspaces } from "@/store/slice/workspaceSlice";
 import { useAppDispatch } from "@/store/hooks";
 
 const DEFAULT_RESEND_DELAY = 30;
@@ -84,20 +85,19 @@ export function VerifyOtpForm({
 
   try {
     const response = await apiClient.post(apiUrl, {
-      identifier,
       code: data.code,
       purpose: purpose as VerifyOtpRequest["purpose"],
     });
 
     const authData = response.data?.data;
 
-    // Private OTP verification returns fresh auth tokens
     if (
       authData?.user &&
       authData?.accessToken &&
       authData?.refreshToken
     ) {
       dispatch(setAuth(authData));
+      dispatch(hydrateWorkspaces({ workspaces: authData.workspaces ?? [] }));
     }
 
     toast.success("Verified successfully");
@@ -131,7 +131,7 @@ export function VerifyOtpForm({
             <p className="text-center text-[12px] text-black">
               We Sent 6 Digit code on{" "}
               <span className="text-primary hover:text-primary/80">
-                {purposeLabel}
+                {identifier || purposeLabel}
               </span>
             </p>
           </div>

@@ -7,15 +7,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { Eye, EyeOff, Mail, Phone } from "lucide-react";
-import { Loader2, Phone } from "lucide-react";
+import { Eye, EyeOff,  } from "lucide-react";
+import { Loader2, Mail, Phone } from "lucide-react";
 import { useLoginMutation } from "@/lib/features/auth/authMutations";
 import { clearOtpState } from "@/store/slice/authSlice";
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
-  // loginEmailSchema,
+  loginEmailSchema,
   loginPhoneSchema,
-  // type LoginEmailForm,
+  type LoginEmailForm,
   type LoginPhoneForm,
 } from "@/lib/features/auth/schemas";
 import toast from "react-hot-toast";
@@ -27,6 +27,15 @@ import type { LoginMode } from "@/types";
 
 
 const COUNTRY_CODES = ["+91", "+1", "+44", "+971", "+65", "+61", "+49", "+33"];
+
+function normalizePhone(value: string, countryCode: string) {
+  const digits = value.replace(/\D/g, "");
+  const codeDigits = countryCode.replace(/\D/g, "");
+  if (digits.length > 10 && codeDigits && digits.startsWith(codeDigits)) {
+    return digits.slice(codeDigits.length);
+  }
+  return digits;
+}
 
 export default function LoginForm() {
   const router = useRouter();
@@ -48,31 +57,31 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
 
-  // const emailForm = useForm<LoginEmailForm>({
-  //   resolver: zodResolver(loginEmailSchema),
-  // });
+  const emailForm = useForm<LoginEmailForm>({
+    resolver: zodResolver(loginEmailSchema),
+  });
 
   const phoneForm = useForm<LoginPhoneForm>({
     resolver: zodResolver(loginPhoneSchema),
   });
 
-  // const onEmailLogin = (data: LoginEmailForm) => {
-  //   loginMutation.mutate(data, {
-  //     onSuccess: (result) => {
-  //       if (result.message?.toLowerCase().includes("otp")) {
-  //         toast.success("OTP sent! Verify to continue.");
-  //         return;
-  //       }
+  const onEmailLogin = (data: LoginEmailForm) => {
+    loginMutation.mutate(data, {
+      onSuccess: (result) => {
+        if (result.message?.toLowerCase().includes("otp")) {
+          toast.success("OTP sent! Verify to continue.");
+          return;
+        }
 
-  //       toast.success("Logged in successfully");
-  //       router.push("/");
-  //     },
-  //   });
-  // };
+        toast.success("Logged in successfully");
+        router.push("/");
+      },
+    });
+  };
 
   const onPhoneLogin = (data: LoginPhoneForm) => {
     loginMutation.mutate(
-      { phone: `${countryCode}${data.phone}` },
+      { phone: normalizePhone(data.phone, countryCode) },
       {
         onSuccess: (result) => {
           if (result.message?.toLowerCase().includes("otp")) {
@@ -139,7 +148,7 @@ export default function LoginForm() {
           </div>
 
 
-          {/* {mode === "email" && (
+          {mode === "email" && (
             <form
               onSubmit={emailForm.handleSubmit(onEmailLogin)}
               className="mt-6 space-y-2"
@@ -218,7 +227,7 @@ export default function LoginForm() {
                 Sign in
               </PrimaryButton>
             </form>
-          )} */}
+          )}
 
           {mode === "phone" && (
             <form
@@ -281,7 +290,7 @@ export default function LoginForm() {
 
           <GoogleAuth AuthType='LOGIN' />
 
-          {/* <button
+          <button
             type="button"
             onClick={() => setMode(mode === "phone" ? "email" : "phone")}
             className="mt-3 relative inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-4 py-2 text-[12px] font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
@@ -303,7 +312,7 @@ export default function LoginForm() {
                 With Phone
               </>
             )}
-          </button> */}
+          </button>
 
 
         </div>
@@ -317,6 +326,7 @@ export default function LoginForm() {
             Sign up
           </Link>
         </p>
+
       </div>
     </div>
   );

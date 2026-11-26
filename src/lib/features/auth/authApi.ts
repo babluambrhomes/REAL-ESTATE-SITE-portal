@@ -11,6 +11,7 @@ import type {
   UpdatePasswordRequest,
   AuthSuccessResponse,
   OtpSentResponse,
+  RegisterOtpResponse,
   MessageResponse,
   RefreshResponse,
   WorkspacesResponse,
@@ -24,7 +25,7 @@ export const authApi = {
 
   register: (data: RegisterRequest) =>
     apiClient
-      .post<AuthSuccessResponse>("/auth/register", data)
+      .post<AuthSuccessResponse | RegisterOtpResponse>("/auth/register", data)
       .then((r) => r.data),
 
   login: (data: LoginRequest) =>

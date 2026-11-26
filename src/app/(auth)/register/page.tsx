@@ -6,17 +6,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { Eye, EyeOff, Mail, Phone } from "lucide-react";
-import { Eye, EyeOff, Phone } from "lucide-react";
+import { Eye, EyeOff, Mail, Phone } from "lucide-react";
+
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearOtpState } from "@/store/slice/authSlice";
 import { useRegisterMutation } from "@/lib/features/auth/authMutations";
 import { authApi } from "@/lib/features/auth/authApi";
 import {
-  // registerEmailSchema,
+  registerEmailSchema,
 
   registerPhoneSchema,
-  // type RegisterEmailForm,
+  type RegisterEmailForm,
   type RegisterPhoneForm,
 } from "@/lib/features/auth/schemas";
 import toast from "react-hot-toast";
@@ -28,6 +28,15 @@ import type { RegisterMode } from "@/types";
 
 
 const COUNTRY_CODES = ["+91", "+1", "+44", "+971", "+65", "+61", "+49", "+33"];
+
+function normalizePhone(value: string, countryCode: string) {
+  const digits = value.replace(/\D/g, "");
+  const codeDigits = countryCode.replace(/\D/g, "");
+  if (digits.length > 10 && codeDigits && digits.startsWith(codeDigits)) {
+    return digits.slice(codeDigits.length);
+  }
+  return digits;
+}
 
 export default function RegisterForm() {
   const dispatch = useAppDispatch();
@@ -48,27 +57,27 @@ export default function RegisterForm() {
   const [mode, setMode] = useState<RegisterMode>("phone");
   const [showOptionalEmail, setShowOptionalEmail] = useState(false);
   const [email, setEmail] = useState("");
-  // const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
 
-  // const emailForm = useForm<RegisterEmailForm>({
-  //   resolver: zodResolver(registerEmailSchema),
-  // });
+  const emailForm = useForm<RegisterEmailForm>({
+    resolver: zodResolver(registerEmailSchema),
+  });
 
   const phoneForm = useForm<RegisterPhoneForm>({
     resolver: zodResolver(registerPhoneSchema),
   });
 
-  // const onEmailRegister = (data: RegisterEmailForm) => {
-  //   registerMutation.mutate(data, {
-  //     onSuccess: () => {
-  //       toast.success("Account created! Verify your email.");
-  //     },
-  //   });
-  // };
+  const onEmailRegister = (data: RegisterEmailForm) => {
+    registerMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success("Account created! Verify your email.");
+      },
+    });
+  };
 
   const onPhoneRegister = (data: RegisterPhoneForm) => {
-    const phone = `${countryCode}${data.phone}`;
+    const phone = normalizePhone(data.phone, countryCode);
     registerMutation.mutate(
       {
         firstName: data.firstName,
@@ -197,21 +206,6 @@ export default function RegisterForm() {
     );
   }
 
-  if (requiresOtp && otpIdentifier && otpPurpose) {
-    return (
-      <VerifyOtpForm
-        identifier={otpIdentifier}
-        purpose={otpPurpose}
-        apiUrl="/auth/private-otp-verify"
-        imgUrl="/auth/otp.png"
-        onSuccess={() => {
-          dispatch(clearOtpState());
-          router.push("/contactupdate");
-        }}
-      />
-    );
-  }
-
   return (
     <div
       className="relative flex w-full  flex-col-reverse items-center justify-center gap-8 lg:flex-row lg:items-center"
@@ -239,7 +233,7 @@ export default function RegisterForm() {
 
 
 
-          {/* {mode === "email" && (
+          {mode === "email" && (
             <form
               onSubmit={emailForm.handleSubmit(onEmailRegister)}
               className="mt-6 space-y-2"
@@ -331,7 +325,7 @@ export default function RegisterForm() {
                 Register Now
               </PrimaryButton>
             </form>
-          )} */}
+          )}
 
           {mode === "phone" && (
             <form
@@ -416,7 +410,7 @@ export default function RegisterForm() {
           <GoogleAuth AuthType='REGISTER' />
 
 
-          {/* <button
+          <button
             type="button"
             onClick={() => setMode(mode === "phone" ? "email" : "phone")}
             className="mt-3 relative inline-flex w-full items-center justify-center gap-2 rounded-md  bg-black px-4 py-2 text-[12px] font-medium text-white transition-colors  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
@@ -438,7 +432,7 @@ export default function RegisterForm() {
                 With Phone
               </>
             )}
-          </button> */}
+          </button>
 
           <p className="mt-2 text-left text-[12px] text-gray-600">
             By Clicking you agree to <Link
